@@ -1,0 +1,45 @@
+---
+title: "Vignette Title"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{eflows principles}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+eflows strives to be a declarative package and probably requires a lot of documentation. In this file I strive to write some of the principles that govern the API and the design of the package
+
+## Use of dataframes with the first column as POSIXt object
+Time plays a vital role in eflows, yet the time series objects are not prefered. Instead, are used liberally data frames where the first column is time-based (and normally named "datetime"). This decision is taken for the sake of simplicity; a time series most of the times behaves like a data frame wehre the first column has different semantics. Where it is necessary to operate with actual time series, two helping functions to flip between data frames and time series are used: `df_to_ts` and `ts_to_df`
+
+
+## Based on energy, not power
+The energy flows are expressed on basis of kWh (the default unit to work with in the package), not kW or any other power unit. In principle kWh and kW are equivalent if the time step is one hour. This makes easier to read the changes in the battery: "25 kWh have flown, so the battery is charged with extra 25 kWh"
+
+## Left-aligned
+The time-based data is left aligned. This means that the changes in flows and battery soc reflect the change of the system once that time step has been concluded. In an hourly-based simulation, the flows that correspond to 14:00 are the ones happened between 14:00 and 15:00, and the soc of the batteries reflect their status once these energy flows have been resolved. 
+
+## Prefixes and nomenclature
+eflows strive to offer a consistent API to interact with energy flows. 
+
+For instance, the prefix `ef_` connotes working with an eflows object, the basis for the package operations. Thus, after creating a first object with the function `ef_initialize`, different elements can be included in the model. 
+
+A first distiction lies in the distiction between the functions prefixed with `add_` (The data is ready to be included in the model) and the functions prefixed with `gen_` (from "generate". The data is not readily available yet, but it is generated on the spot, thanks to the application of algorithms, normally involving randomness somehow)
+
+Then, these functions are suffixed by the element in itself that refers to. These include: 
+
+- `battery`, that unless stated otherwise, it refers to an stationary one. On some parts of the package, this is refered also as `batt`.
+- `ev`, that stands for electric vehicles. This includes a number of factors, among them the battery and the soc available. When talking about batteries, the distinction between stationary batteries and electric vehicles batteries is signified with `batt` and `ev`.
+
+- `infrastructure`: It refers both to the grid (which most important factor is the "grid capactiy", and the charging points `chp` in the jargon (and chaging stations `chs`, that are bundles of charging points)).(future: divide in two functions?)
+
+- Electricity prices
+- Misc, for random stuff that can be used with steering?
+
+Once added the elements to the simulation, results can be generated using the function `ef_simulate`. This function uses the `steer` parameter to bundle the preferences for smart energy
+
+- (future) `steer`: A term used to especify the algorithms that direct the energy flows between elements of the system. It includes factors as the preference for charge/discharge, use of Vehicle to Grid, charge thresholds etc. The steering can be very simple if it includes just default values, or very complex if it consists in functions that change over time and consider the forecast, too. 
+
+Once the simulation has been run, there are a number of functions that easily visualize the results (using dygraphs), and that can be used both for exploratory anaysis and to include directly in websites using shiny. These functions are denoted with `graph_` For instance, `graph_flows`, `graph_ev` and else. Last, the functions prefixed by `display_` are used to modify the graph functions, adding new details or functionalities. 

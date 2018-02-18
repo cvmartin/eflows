@@ -1,0 +1,29 @@
+Package: eflows
+Type: Package
+Title: Energy Systems Simulation and Steering
+Version: 0.1.1.9000
+Author: person("Carlos", "Varela Mart?n", email = "cvarelamail@gmail.com",
+    role = c("aut", "cre"))
+Maintainer: Carlos Varela Mart?n <cvarelamail@gmail.com>
+Description: A toolbox for predicting the energy flows between
+    the different elements of an energy system, 
+    including renewable energies, stationary batteries and 
+    electric vehicles. The same functions involved in the 
+    simulation can be reused to do real-time steering of 
+    the energy system.
+License: GPL-2
+Encoding: UTF-8
+Depends: R (>= 2.10)
+LazyData: true
+Imports: zoo, 
+    xts,
+    magrittr,
+    dygraphs,
+    dplyr,
+    Rcpp
+RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
+LinkingTo: Rcpp
