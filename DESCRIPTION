@@ -11,7 +11,7 @@ Description: A toolbox for predicting the energy flows between
     electric vehicles. The same functions involved in the 
     simulation can be reused to do real-time steering of 
     the energy system.
-License: GPL-2
+License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 2.10)
 LazyData: true
@@ -27,3 +27,5 @@ Suggests: knitr,
     testthat
 VignetteBuilder: knitr
 LinkingTo: Rcpp
+URL: https://github.com/cvmartin/eflows
+BugReports: https://github.com/cvmartin/eflows/issues

@@ -1,11 +1,18 @@
-# eflows
 
-The goal of eflows is to ...
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+eflows <img src="man/figures/eflowsicon.png" align="right" width="140" />
+=========================================================================
 
-## Example
+[![Travis Build Status](https://travis-ci.org/cvmartin/eflows.svg?branch=master)](https://travis-ci.org/cvmartin/eflows)
 
-This is a basic example which shows you how to solve a common problem:
+Overview
+--------
+
+eflows is a toolbox for predicting the energy flows between the different elements of an energy system, including renewable energies, stationary batteries and electric vehicles. In addition, the same functions involved in the simulation can be reused to do real-time steering of the energy system.
+
+Installation
+------------
 
 ``` r
-## basic example code
+devtools::install_github("cvmartin/eflows", build_vignettes = TRUE)
 ```
