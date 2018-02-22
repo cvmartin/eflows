@@ -19,7 +19,6 @@ Imports: zoo,
     xts,
     magrittr,
     dygraphs,
-    dplyr,
     Rcpp
 RoxygenNote: 6.0.1
 Suggests: knitr,

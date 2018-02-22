@@ -21,6 +21,6 @@ df_to_ts <- function(df) {
 #' @return Data frame where the fist column is a POSIXt object calle "datetime"
 #' @export
 ts_to_df <- function(ts){
-  new_df <- data.frame(datetime=index(ts),
-                       coredata(tseries))
+  new_df <- data.frame(datetime=xts::index(ts),
+                       xts::coredata(ts))
 }

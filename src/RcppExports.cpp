@@ -6,22 +6,26 @@
 using namespace Rcpp;
 
 // allocate
-NumericVector allocate(double flow, NumericVector pref_v, NumericVector soc_v, NumericVector cap_v);
-RcppExport SEXP eflows_allocate(SEXP flowSEXP, SEXP pref_vSEXP, SEXP soc_vSEXP, SEXP cap_vSEXP) {
+List allocate(double flow, NumericVector soc, NumericVector vol, NumericVector share, NumericVector level, LogicalVector active, NumericVector eff, NumericVector cap);
+RcppExport SEXP eflows_allocate(SEXP flowSEXP, SEXP socSEXP, SEXP volSEXP, SEXP shareSEXP, SEXP levelSEXP, SEXP activeSEXP, SEXP effSEXP, SEXP capSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type flow(flowSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type pref_v(pref_vSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type soc_v(soc_vSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type cap_v(cap_vSEXP);
-    rcpp_result_gen = Rcpp::wrap(allocate(flow, pref_v, soc_v, cap_v));
+    Rcpp::traits::input_parameter< NumericVector >::type soc(socSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vol(volSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type share(shareSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type level(levelSEXP);
+    Rcpp::traits::input_parameter< LogicalVector >::type active(activeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type eff(effSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type cap(capSEXP);
+    rcpp_result_gen = Rcpp::wrap(allocate(flow, soc, vol, share, level, active, eff, cap));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"eflows_allocate", (DL_FUNC) &eflows_allocate, 4},
+    {"eflows_allocate", (DL_FUNC) &eflows_allocate, 8},
     {NULL, NULL, 0}
 };
 
