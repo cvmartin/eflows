@@ -18,12 +18,12 @@ LazyData: true
 Imports: zoo, 
     xts,
     magrittr,
-    dygraphs,
     Rcpp
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown,
-    testthat
+    testthat, 
+    dygraphs
 VignetteBuilder: knitr
 LinkingTo: Rcpp
 URL: https://github.com/cvmartin/eflows
