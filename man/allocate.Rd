@@ -4,8 +4,9 @@
 \alias{allocate}
 \title{Allocate energy flows to batteries.}
 \usage{
-allocate(flow, soc, vol, share = as.numeric(c()), level = as.numeric(c()),
-  active = as.logical(c()), eff = as.numeric(c()), cap = as.numeric(c()))
+allocate(flow, soc, vol, share = as.numeric(c(1)), level = as.numeric(c(1)),
+  active = as.logical(c(1)), eff = as.numeric(c(1)),
+  cap = as.numeric(c(0)))
 }
 \arguments{
 \item{flow}{Energy flow to be exchanged in the following time step .
@@ -13,7 +14,7 @@ Positive for charge, negative for discharge.}
 
 \item{soc}{Current state of charge.}
 
-\item{vol}{Objective state of charge to be achieved.}
+\item{vol}{Objective state of charge to be achieved}
 
 \item{share}{Double, indicating the priority to share the energy flow}
 

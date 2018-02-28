@@ -8,7 +8,7 @@
 #' @param flow Energy flow to be exchanged in the following time step .
 #' Positive for charge, negative for discharge.
 #' @param soc Current state of charge.
-#' @param vol Objective state of charge to be achieved.
+#' @param vol Objective state of charge to be achieved
 #' @param share Double, indicating the priority to share the energy flow
 #' @param level Integer, expressing the priority to be resolved, starting with
 #' the highest
@@ -19,7 +19,7 @@
 #' @return An object containing the state of charge of each battery, its final
 #' energy flow, and a double containing the energy that was not shared
 #' @export
-allocate <- function(flow, soc, vol, share = as.numeric( c()), level = as.numeric( c()), active = as.logical( c()), eff = as.numeric( c()), cap = as.numeric( c())) {
+allocate <- function(flow, soc, vol, share = as.numeric( c(1)), level = as.numeric( c(1)), active = as.logical( c(1)), eff = as.numeric( c(1)), cap = as.numeric( c(0))) {
     .Call('eflows_allocate', PACKAGE = 'eflows', flow, soc, vol, share, level, active, eff, cap)
 }
 
