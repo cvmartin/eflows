@@ -9,7 +9,7 @@ using namespace Rcpp;
 //' @param flow Energy flow to be exchanged in the following time step .
 //' Positive for charge, negative for discharge.
 //' @param soc Current state of charge.
-//' @param vol Objective state of charge to be achieved
+//' @param vol Objective state of charge to be achieved.
 //' @param share Double, indicating the priority to share the energy flow
 //' @param level Integer, expressing the priority to be resolved, starting with
 //' the highest
@@ -22,33 +22,29 @@ using namespace Rcpp;
 //' @export
 // [[Rcpp::export]]
 List allocate (double flow,
-                 NumericVector soc,
-                 NumericVector vol,
-                 NumericVector share = NumericVector::create(1),
-                 NumericVector level = NumericVector::create(1),
-                 LogicalVector active = LogicalVector::create(1),
-                 NumericVector eff = NumericVector::create(1),
-                 NumericVector cap = NumericVector::create(0)){
+               NumericVector soc,
+               NumericVector vol,
+               NumericVector share = NumericVector::create(1),
+               NumericVector level = NumericVector::create(1),
+               LogicalVector active = LogicalVector::create(1),
+               NumericVector eff = NumericVector::create(1),
+               NumericVector cap = NumericVector::create(0)){
   double overflow = flow;
 
-  int n = soc.length();
-  // Rcout << "hi there 4";
+  int n = soc.size();
 
   NumericVector avail =  vol - soc;
 
   IntegerVector active2 = as<IntegerVector>(active);
-  if (active2.length() == 1) active2 = rep(active2[0], n);
+  if (active2.size() == 1) active2 = rep(active2[0], n);
 
-  if (vol.length() == 1) vol = rep(vol[0], n);
-  if (share.length() == 1) share = rep(share[0], n);
-  if (level.length() == 1) level = rep(level[0], n);
-  if (eff.length() == 1) eff = rep(eff[0], n);
-  if (cap.length() == 1) cap = rep(cap[0], n);
+  if (vol.size() == 1) vol = rep(vol[0], n);
+  if (share.size() == 1) share = rep(share[0], n);
+  if (level.size() == 1) level = rep(level[0], n);
+  if (eff.size() == 1) eff = rep(eff[0], n);
+  if (cap.size() == 1) cap = rep(cap[0], n);
 
   IntegerVector demand(n, 0);
-
-  CharacterVector mrows = CharacterVector::create(
-    "soc","vol","avail","share","level", "active", "eff", "cap", "demand");
 
   // Error: if the size of the vectors is not the right one.
   List elements = List::create(vol, share, level, active2, eff, cap);
@@ -62,6 +58,15 @@ List allocate (double flow,
            chekname, n, check.size());
     }
   }
+  // Error: if eff is <= 0 or > 1
+  if (is_true(any(eff <= 0)) | is_true(any(eff > 1))){
+    stop("'eff': expected all values between higher than 0 and 1");
+  }
+  // Error: input positive values
+  if (is_true(any(soc < 0))) stop("'soc': negative values not allowed");
+  if (is_true(any(vol < 0))) stop("'vol': negative values not allowed");
+  if (is_true(any(share < 0))) stop("'share': negative values not allowed");
+  if (is_true(any(cap < 0))) stop("'cap': negative values not allowed");
 
   // Define the master matrix
   NumericMatrix m(9, n);
@@ -74,20 +79,20 @@ List allocate (double flow,
   m(6, _) = eff;
   m(7, _) = cap;
   m(8, _) = demand;
-  rownames(m) = mrows;
+  // Uncomment for debugging purposes:
+  // rownames(m) = CharacterVector::create(
+  //   "soc","vol","avail","share","level", "active", "eff", "cap", "demand");
 
   // cap: limit the vol if it exceeds the cap by the efficiency
   if (flow > 0){
-    m(1, _) = ifelse((m(7, _) * m(6, _) < m(2, _))&(m(7, _) != 0),
-      (m(0, _) + m(7, _)* m(6, _)),
-      m(1, _));
-    m(2, _) = m(1, _) - m(0, _);
+    m(1, _) = ifelse((m(7, _) * m(6, _) < m(2, _)) & (m(7, _) != 0),
+      (m(0, _) + m(7, _)* m(6, _)), m(1, _));
   } else {
-    m(1, _) = ifelse((m(7, _) / m(6, _) > m(2, _))&(m(7, _) != 0),
-      (m(0, _) + m(7, _)/ m(6, _)),
-      m(1, _));
-    m(2, _) = m(1, _) - m(0, _);
+    m(7, _) = m(7, _) * -1;
+    m(1, _) = ifelse((m(7, _) / m(6, _) > m(2, _)) & (m(7, _) != 0),
+      (m(0, _) + m(7, _)/ m(6, _)), m(1, _));
   }
+  m(2, _) = m(1, _) - m(0, _);
 
   // Error: if there are active and with available of opposite sign
   NumericVector checksign(m.ncol());
@@ -98,24 +103,31 @@ List allocate (double flow,
       checksign[i] = -1;
     }
   }
-  if (is_true(any(checksign == 1)) & is_true(any(checksign == -1))){
+  if ((any(checksign == 1).is_true()) & (any(checksign == -1).is_true())){
     stop("charge and discharge of batteries cannot be executed in the same call. Use 'relocate()' instead");
   }
+  // Error: if 'avail' is positive and flow negative or vice versa
+  if ((all(checksign >= 0).is_true()) & (flow < 0)){
+    stop("negative 'flow' is not compatible with battery charge");
+  } else if ((all(checksign <= 0).is_true()) & (flow > 0)){
+    stop("positive 'flow' is not compatible with battery discharge");
+  }
 
+  // Arrange the levels to be considered
   NumericVector n_levels = rev(sort_unique(m(4, _)));
 
-  for (int i=0; i < n_levels.length(); ++i){
-
+  for (int i=0; i < n_levels.size(); ++i){
     // Create matrix by level
     IntegerVector posit = IntegerVector::create();
     for (int j=0; j < m.ncol(); ++j){
       if (m(4,j) == n_levels[i] && m(5,j) == 1) posit.push_back(j);
     }
-    NumericMatrix mx(m.nrow(), posit.length());
-    for (int j=0; j < posit.length(); ++j){
+    NumericMatrix mx(m.nrow(), posit.size());
+    for (int j=0; j < posit.size(); ++j){
       mx(_,j) = m(_,posit[j]);
     }
 
+    // while any 'avail' is different than zero in a given level:
     while(is_true(any(mx(2, _) != 0))){
       // Redo share
       for (int j=0; j < mx.ncol(); ++j){
@@ -145,15 +157,19 @@ List allocate (double flow,
         mx(0, _) = mx(0, _) + d_real / mx(6, _);
       }
 
+      // avail = vol - soc
       mx(2, _) = mx(1, _) - mx(0, _);
+      // update demand with d_real
       mx(8, _) = mx(8, _) + d_real;
       overflow = overflow - sum(d_real);
-
+      // if there is no more flow to share, break the while loop
       if (overflow == 0) break;
     }
-    for (int j=0; j < posit.length(); ++j){
+    // reintegrate 'mx' with 'm', and pass to the next level
+    for (int j=0; j < posit.size(); ++j){
       m( _, posit[j]) = mx( _, j);
     }
+    // but before, if there is no more flow to share, break the for loop
     if (overflow == 0) break;
   }
 
@@ -163,5 +179,3 @@ List allocate (double flow,
 
   return result;
 }
-
-

@@ -8,7 +8,7 @@
 #' @param flow Energy flow to be exchanged in the following time step .
 #' Positive for charge, negative for discharge.
 #' @param soc Current state of charge.
-#' @param vol Objective state of charge to be achieved
+#' @param vol Objective state of charge to be achieved.
 #' @param share Double, indicating the priority to share the energy flow
 #' @param level Integer, expressing the priority to be resolved, starting with
 #' the highest

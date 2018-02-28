@@ -14,7 +14,7 @@ Positive for charge, negative for discharge.}
 
 \item{soc}{Current state of charge.}
 
-\item{vol}{Objective state of charge to be achieved}
+\item{vol}{Objective state of charge to be achieved.}
 
 \item{share}{Double, indicating the priority to share the energy flow}
 
