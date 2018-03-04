@@ -23,17 +23,14 @@ allocate <- function(flow, soc, vol, share = as.numeric( c(1)), level = as.numer
     .Call('eflows_allocate', PACKAGE = 'eflows', flow, soc, vol, share, level, active, eff, cap)
 }
 
-#' @export
 divide <- function(x, precision = 0.01) {
     .Call('eflows_divide', PACKAGE = 'eflows', x, precision)
 }
 
-#' @export
 sumvect <- function(x, y) {
     .Call('eflows_sumvect', PACKAGE = 'eflows', x, y)
 }
 
-#' @export
 flexlocate <- function(matrix, steps) {
     .Call('eflows_flexlocate', PACKAGE = 'eflows', matrix, steps)
 }
