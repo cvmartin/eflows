@@ -14,7 +14,9 @@ knitr::opts_chunk$set(
 
 # eflows <img src="man/figures/eflowsicon.png" align="right" width="140" />
 
-[![Travis Build Status](https://travis-ci.org/cvmartin/eflows.svg?branch=master)](https://travis-ci.org/cvmartin/eflows)
+[![Travis Build Status](https://travis-ci.org/cvmartin/eflows.svg?branch=master)](https://travis-ci.org/cvmartin/eflows) 
+[![Coverage Status](man/figures/lifecycle-designing-orange.svg)](https://codecov.io/github/r-lib/rlang?branch=master)
+
 
 
 ## Overview

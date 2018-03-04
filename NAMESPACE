@@ -2,8 +2,11 @@
 
 export(allocate)
 export(df_to_ts)
+export(divide)
+export(flexlocate)
 export(kw_to_kwh)
 export(kwh_to_kw)
+export(sumvect)
 export(ts_to_df)
 import(Rcpp)
 importFrom(magrittr,'%>%')
