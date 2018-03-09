@@ -106,12 +106,17 @@ List allocate (double flow,
   if ((any(checksign == 1).is_true()) & (any(checksign == -1).is_true())){
     stop("charge and discharge of batteries cannot be executed in the same call. Use 'relocate()' instead");
   }
+
+
   // Error: if 'avail' is positive and flow negative or vice versa
-  if ((all(checksign >= 0).is_true()) & (flow < 0)){
-    stop("negative 'flow' is not compatible with battery charge");
-  } else if ((all(checksign <= 0).is_true()) & (flow > 0)){
-    stop("positive 'flow' is not compatible with battery discharge");
+  if (is_false(all(checksign == 0))){
+    if ((all(checksign >= 0).is_true()) & (flow < 0)){
+      stop("negative 'flow' is not compatible with battery charge");
+    } else if (is_true(all(checksign <= 0)) & (flow > 0)){
+      stop("positive 'flow' is not compatible with battery discharge");
+    }
   }
+
 
   // Arrange the levels to be considered
   NumericVector n_levels = rev(sort_unique(m(4, _)));
