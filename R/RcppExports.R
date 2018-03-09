@@ -35,3 +35,55 @@ flexlocate <- function(matrix, steps) {
     .Call('eflows_flexlocate', PACKAGE = 'eflows', matrix, steps)
 }
 
+#' Shift energy consumption towards the future.
+#'
+#' In function of a fitting curve and the flexibility time, the consumption of
+#' energy is delayed.
+#' @param matrix Numeric matrix, each row an observation in time (it can be a time series)
+#' and each column representing the flexibility of demand, increasing towards the right.
+#' @param flex_step Integer vector of same length of the column of `matrix`, indicating
+#' the number of timesteps the demand can be delayed. Normally, the first integer is `0`,
+#' indicating the `solid` demand.
+#' @param cap If higher than 0, indicates the maximum capacity of flexible demand
+#' that can be allocated in a timestep.
+#' @param cap_spread Boolean. if true, the cap is never exceeded, and instead the
+#' consumption is displaced towards the future, and resolved as soon as possible.
+#' @param foresee Boolean. If false, it indicates a complete lack of knowledge of the
+#' future flexible demand in the timeline.
+#' @param solar If present, the fitting curve is calculated substracting solar
+#' from the demand.
+#'
+#' @return A matrix, or an xts object if the index provided are a POSIXct object.
+#' @export
+foreshift <- function(matrix, flex_step, cap = 0, cap_spread = TRUE, foresee = TRUE, solar = as.numeric( c(0))) {
+    .Call('eflows_foreshift', PACKAGE = 'eflows', matrix, flex_step, cap, cap_spread, foresee, solar)
+}
+
+divide <- function(x, precision = 0.01) {
+    .Call('eflows_divide', PACKAGE = 'eflows', x, precision)
+}
+
+present <- function(vec, start, end) {
+    .Call('eflows_present', PACKAGE = 'eflows', vec, start, end)
+}
+
+xts_index <- function(xts_mtx) {
+    .Call('eflows_xts_index', PACKAGE = 'eflows', xts_mtx)
+}
+
+signif_ccp <- function(value, digits) {
+    .Call('eflows_signif_ccp', PACKAGE = 'eflows', value, digits)
+}
+
+tell_min <- function(x) {
+    .Call('eflows_tell_min', PACKAGE = 'eflows', x)
+}
+
+tellmin2 <- function(x) {
+    .Call('eflows_tellmin2', PACKAGE = 'eflows', x)
+}
+
+signif_step <- function(matrix, den = 10) {
+    .Call('eflows_signif_step', PACKAGE = 'eflows', matrix, den)
+}
+

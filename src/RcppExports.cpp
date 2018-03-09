@@ -59,12 +59,118 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// foreshift
+NumericMatrix foreshift(NumericMatrix matrix, IntegerVector flex_step, float cap, bool cap_spread, bool foresee, NumericVector solar);
+RcppExport SEXP eflows_foreshift(SEXP matrixSEXP, SEXP flex_stepSEXP, SEXP capSEXP, SEXP cap_spreadSEXP, SEXP foreseeSEXP, SEXP solarSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type matrix(matrixSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type flex_step(flex_stepSEXP);
+    Rcpp::traits::input_parameter< float >::type cap(capSEXP);
+    Rcpp::traits::input_parameter< bool >::type cap_spread(cap_spreadSEXP);
+    Rcpp::traits::input_parameter< bool >::type foresee(foreseeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type solar(solarSEXP);
+    rcpp_result_gen = Rcpp::wrap(foreshift(matrix, flex_step, cap, cap_spread, foresee, solar));
+    return rcpp_result_gen;
+END_RCPP
+}
+// divide
+NumericVector divide(float x, float precision);
+RcppExport SEXP eflows_divide(SEXP xSEXP, SEXP precisionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type x(xSEXP);
+    Rcpp::traits::input_parameter< float >::type precision(precisionSEXP);
+    rcpp_result_gen = Rcpp::wrap(divide(x, precision));
+    return rcpp_result_gen;
+END_RCPP
+}
+// present
+NumericVector present(NumericVector vec, int start, int end);
+RcppExport SEXP eflows_present(SEXP vecSEXP, SEXP startSEXP, SEXP endSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< int >::type start(startSEXP);
+    Rcpp::traits::input_parameter< int >::type end(endSEXP);
+    rcpp_result_gen = Rcpp::wrap(present(vec, start, end));
+    return rcpp_result_gen;
+END_RCPP
+}
+// xts_index
+DatetimeVector xts_index(NumericMatrix xts_mtx);
+RcppExport SEXP eflows_xts_index(SEXP xts_mtxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type xts_mtx(xts_mtxSEXP);
+    rcpp_result_gen = Rcpp::wrap(xts_index(xts_mtx));
+    return rcpp_result_gen;
+END_RCPP
+}
+// signif_ccp
+double signif_ccp(double value, int digits);
+RcppExport SEXP eflows_signif_ccp(SEXP valueSEXP, SEXP digitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type value(valueSEXP);
+    Rcpp::traits::input_parameter< int >::type digits(digitsSEXP);
+    rcpp_result_gen = Rcpp::wrap(signif_ccp(value, digits));
+    return rcpp_result_gen;
+END_RCPP
+}
+// tell_min
+int tell_min(NumericVector x);
+RcppExport SEXP eflows_tell_min(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(tell_min(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// tellmin2
+LogicalVector tellmin2(NumericVector x);
+RcppExport SEXP eflows_tellmin2(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(tellmin2(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// signif_step
+NumericVector signif_step(NumericMatrix matrix, float den);
+RcppExport SEXP eflows_signif_step(SEXP matrixSEXP, SEXP denSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type matrix(matrixSEXP);
+    Rcpp::traits::input_parameter< float >::type den(denSEXP);
+    rcpp_result_gen = Rcpp::wrap(signif_step(matrix, den));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"eflows_allocate", (DL_FUNC) &eflows_allocate, 8},
     {"eflows_divide", (DL_FUNC) &eflows_divide, 2},
     {"eflows_sumvect", (DL_FUNC) &eflows_sumvect, 2},
     {"eflows_flexlocate", (DL_FUNC) &eflows_flexlocate, 2},
+    {"eflows_foreshift", (DL_FUNC) &eflows_foreshift, 6},
+    {"eflows_divide", (DL_FUNC) &eflows_divide, 2},
+    {"eflows_present", (DL_FUNC) &eflows_present, 3},
+    {"eflows_xts_index", (DL_FUNC) &eflows_xts_index, 1},
+    {"eflows_signif_ccp", (DL_FUNC) &eflows_signif_ccp, 2},
+    {"eflows_tell_min", (DL_FUNC) &eflows_tell_min, 1},
+    {"eflows_tellmin2", (DL_FUNC) &eflows_tellmin2, 1},
+    {"eflows_signif_step", (DL_FUNC) &eflows_signif_step, 2},
     {NULL, NULL, 0}
 };
 
