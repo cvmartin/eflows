@@ -23,7 +23,8 @@ RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown,
     testthat, 
-    dygraphs
+    dygraphs,
+    covr
 VignetteBuilder: knitr
 LinkingTo: Rcpp
 URL: https://github.com/cvmartin/eflows
