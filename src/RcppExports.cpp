@@ -23,42 +23,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// divide
-NumericVector divide(float x, float precision);
-RcppExport SEXP eflows_divide(SEXP xSEXP, SEXP precisionSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< float >::type x(xSEXP);
-    Rcpp::traits::input_parameter< float >::type precision(precisionSEXP);
-    rcpp_result_gen = Rcpp::wrap(divide(x, precision));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sumvect
-NumericVector sumvect(NumericVector x, NumericVector y);
-RcppExport SEXP eflows_sumvect(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(sumvect(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// flexlocate
-NumericMatrix flexlocate(NumericMatrix matrix, IntegerVector steps);
-RcppExport SEXP eflows_flexlocate(SEXP matrixSEXP, SEXP stepsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type matrix(matrixSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type steps(stepsSEXP);
-    rcpp_result_gen = Rcpp::wrap(flexlocate(matrix, steps));
-    return rcpp_result_gen;
-END_RCPP
-}
 // foreshift
 NumericMatrix foreshift(NumericMatrix matrix, IntegerVector flex_step, float cap, bool cap_spread, bool foresee, NumericVector solar);
 RcppExport SEXP eflows_foreshift(SEXP matrixSEXP, SEXP flex_stepSEXP, SEXP capSEXP, SEXP cap_spreadSEXP, SEXP foreseeSEXP, SEXP solarSEXP) {
@@ -134,42 +98,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// tellmin2
-LogicalVector tellmin2(NumericVector x);
-RcppExport SEXP eflows_tellmin2(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(tellmin2(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // signif_step
-NumericVector signif_step(NumericMatrix matrix, float den);
-RcppExport SEXP eflows_signif_step(SEXP matrixSEXP, SEXP denSEXP) {
+NumericVector signif_step(NumericMatrix matrix, float denom);
+RcppExport SEXP eflows_signif_step(SEXP matrixSEXP, SEXP denomSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type matrix(matrixSEXP);
-    Rcpp::traits::input_parameter< float >::type den(denSEXP);
-    rcpp_result_gen = Rcpp::wrap(signif_step(matrix, den));
+    Rcpp::traits::input_parameter< float >::type denom(denomSEXP);
+    rcpp_result_gen = Rcpp::wrap(signif_step(matrix, denom));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"eflows_allocate", (DL_FUNC) &eflows_allocate, 8},
-    {"eflows_divide", (DL_FUNC) &eflows_divide, 2},
-    {"eflows_sumvect", (DL_FUNC) &eflows_sumvect, 2},
-    {"eflows_flexlocate", (DL_FUNC) &eflows_flexlocate, 2},
     {"eflows_foreshift", (DL_FUNC) &eflows_foreshift, 6},
     {"eflows_divide", (DL_FUNC) &eflows_divide, 2},
     {"eflows_present", (DL_FUNC) &eflows_present, 3},
     {"eflows_xts_index", (DL_FUNC) &eflows_xts_index, 1},
     {"eflows_signif_ccp", (DL_FUNC) &eflows_signif_ccp, 2},
     {"eflows_tell_min", (DL_FUNC) &eflows_tell_min, 1},
-    {"eflows_tellmin2", (DL_FUNC) &eflows_tellmin2, 1},
     {"eflows_signif_step", (DL_FUNC) &eflows_signif_step, 2},
     {NULL, NULL, 0}
 };

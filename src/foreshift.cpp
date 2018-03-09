@@ -1,5 +1,7 @@
 #include <Rcpp.h>
+#include"myheader.hpp"
 using namespace Rcpp;
+
 
 //' Shift energy consumption towards the future.
 //'

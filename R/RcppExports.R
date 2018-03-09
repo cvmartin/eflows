@@ -23,18 +23,6 @@ allocate <- function(flow, soc, vol, share = as.numeric( c(1)), level = as.numer
     .Call('eflows_allocate', PACKAGE = 'eflows', flow, soc, vol, share, level, active, eff, cap)
 }
 
-divide <- function(x, precision = 0.01) {
-    .Call('eflows_divide', PACKAGE = 'eflows', x, precision)
-}
-
-sumvect <- function(x, y) {
-    .Call('eflows_sumvect', PACKAGE = 'eflows', x, y)
-}
-
-flexlocate <- function(matrix, steps) {
-    .Call('eflows_flexlocate', PACKAGE = 'eflows', matrix, steps)
-}
-
 #' Shift energy consumption towards the future.
 #'
 #' In function of a fitting curve and the flexibility time, the consumption of
@@ -79,11 +67,7 @@ tell_min <- function(x) {
     .Call('eflows_tell_min', PACKAGE = 'eflows', x)
 }
 
-tellmin2 <- function(x) {
-    .Call('eflows_tellmin2', PACKAGE = 'eflows', x)
-}
-
-signif_step <- function(matrix, den = 10) {
-    .Call('eflows_signif_step', PACKAGE = 'eflows', matrix, den)
+signif_step <- function(matrix, denom) {
+    .Call('eflows_signif_step', PACKAGE = 'eflows', matrix, denom)
 }
 

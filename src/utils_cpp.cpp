@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include"myheader.hpp"
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -29,7 +30,6 @@ DatetimeVector xts_index(NumericMatrix xts_mtx) {
   return index;
 }
 
-
 // [[Rcpp::export]]
 double signif_ccp (double value, int digits) {
   if (value == 0.0) // otherwise it will return 'nan' due to the log10() of zero
@@ -50,13 +50,7 @@ int tell_min (NumericVector x){
 
 
 // [[Rcpp::export]]
-LogicalVector tellmin2 (NumericVector x){
-  return is_finite(x);
-}
-
-// [[Rcpp::export]]
-NumericVector signif_step (NumericMatrix matrix,
-                           float den = 10) {
+NumericVector signif_step (NumericMatrix matrix, float denom) {
 
   int n = matrix.ncol();
   NumericVector m_means(n);
@@ -66,7 +60,7 @@ NumericVector signif_step (NumericMatrix matrix,
 
   NumericVector m_steps(n);
   for (int i=0; i < n; ++i) {
-    m_steps[i] = signif_ccp(m_means[i],3)/den;
+    m_steps[i] = signif_ccp(m_means[i],3)/denom;
   }
 
   return m_steps;
