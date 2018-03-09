@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include"myheader.hpp"
+#include"../inst/include/myheader.hpp"
 using namespace Rcpp;
 
 
