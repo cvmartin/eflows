@@ -176,6 +176,5 @@ List allocate (double flow,
   List result = List::create(_["soc"] = m(0, _),
                              _["flow"] = m(8, _),
                              _["overflow"] = overflow);
-
   return result;
 }
