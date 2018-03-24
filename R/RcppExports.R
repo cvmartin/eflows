@@ -23,6 +23,27 @@ allocate <- function(flow, soc, vol, share = as.numeric( c(1)), level = as.numer
     .Call('_eflows_allocate', PACKAGE = 'eflows', flow, soc, vol, share, level, active, eff, cap)
 }
 
+subset_range <- function(vec, start, end) {
+    .Call('_eflows_subset_range', PACKAGE = 'eflows', vec, start, end)
+}
+
+depreciate <- function(x, depreciation) {
+    .Call('_eflows_depreciate', PACKAGE = 'eflows', x, depreciation)
+}
+
+seq_depreciated <- function(length, depreciation) {
+    .Call('_eflows_seq_depreciated', PACKAGE = 'eflows', length, depreciation)
+}
+
+#' Shift energy consumption towards the past.
+#'
+#'
+#' @return A matrix, or an xts object if the index provided are a POSIXct object.
+#' @export
+backshift <- function(matrix, price, horizon, depreciation, cap, size) {
+    .Call('_eflows_backshift', PACKAGE = 'eflows', matrix, price, horizon, depreciation, cap, size)
+}
+
 #' Shift energy consumption towards the future.
 #'
 #' In function of a fitting curve and the flexibility time, the consumption of
