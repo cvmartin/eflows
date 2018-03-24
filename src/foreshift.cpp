@@ -47,6 +47,7 @@ NumericMatrix foreshift(NumericMatrix matrix,
   int n_col = mtx.ncol();
 
   // Define solid consumption and total consumption
+  // IS THIS THE PROBLEM; SHOULD THIS BE A DEEP COPY??
   NumericVector solid_vct = mtx( _ ,0);
   NumericVector flex_vct(n_row);
 
@@ -54,7 +55,7 @@ NumericMatrix foreshift(NumericMatrix matrix,
   flex_mtx(_,0) = clone(solid_vct);
 
   // size of the chunks to split the columns in
-  NumericVector chunks_size = signif_step(mtx);
+  NumericVector chunks_size = signif_step(mtx, 30);
 
   for (int e=1; e < n_col; ++e) {
     for (int i=0; i < n_row; ++i) {
@@ -62,7 +63,6 @@ NumericMatrix foreshift(NumericMatrix matrix,
       NumericVector chunks = divide(mtx(i,e), chunks_size[e]);
 
       // At the end of the graph, the flexible is not considered
-      // int margin = e+1;
       if ( i+1 >= n_row - e) chunks = 0;
 
       for (int j=0; j < chunks.size(); ++j) {
@@ -75,8 +75,6 @@ NumericMatrix foreshift(NumericMatrix matrix,
         }
         // Apply cap, if necessary
         NumericVector iflex = present(flex_vct,i,e);
-
-
 
         if (is_true(any(iflex < cap)) & (cap > 0)) {
           for (int k=0; k < iflex.size(); ++k) {
