@@ -12,7 +12,7 @@ using namespace Rcpp;
 //' @param vol Objective state of charge to be achieved.
 //' @param share Double, indicating the priority to share the energy flow
 //' @param level Integer, expressing the priority to be resolved, starting with
-//' the highest
+//' the highest.
 //' @param active boolean, expressing whether the battery should be considered
 //' @param eff Efiiciency of the energy flow.
 //' @param cap Maximum energy that can be exchanged witht the battery
@@ -106,7 +106,6 @@ List allocate (double flow,
   if ((any(checksign == 1).is_true()) & (any(checksign == -1).is_true())){
     stop("charge and discharge of batteries cannot be executed in the same call. Use 'relocate()' instead");
   }
-
 
   // Error: if 'avail' is positive and flow negative or vice versa
   if (is_false(all(checksign == 0))){

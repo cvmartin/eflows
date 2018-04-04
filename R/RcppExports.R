@@ -11,7 +11,7 @@
 #' @param vol Objective state of charge to be achieved.
 #' @param share Double, indicating the priority to share the energy flow
 #' @param level Integer, expressing the priority to be resolved, starting with
-#' the highest
+#' the highest.
 #' @param active boolean, expressing whether the battery should be considered
 #' @param eff Efiiciency of the energy flow.
 #' @param cap Maximum energy that can be exchanged witht the battery

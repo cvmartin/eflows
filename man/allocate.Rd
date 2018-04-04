@@ -19,7 +19,7 @@ Positive for charge, negative for discharge.}
 \item{share}{Double, indicating the priority to share the energy flow}
 
 \item{level}{Integer, expressing the priority to be resolved, starting with
-the highest}
+the highest.}
 
 \item{active}{boolean, expressing whether the battery should be considered}
 
