@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // allocate
 List allocate(double flow, NumericVector soc, NumericVector vol, NumericVector share, NumericVector level, LogicalVector active, NumericVector eff, NumericVector cap);
-RcppExport SEXP eflows_allocate(SEXP flowSEXP, SEXP socSEXP, SEXP volSEXP, SEXP shareSEXP, SEXP levelSEXP, SEXP activeSEXP, SEXP effSEXP, SEXP capSEXP) {
+RcppExport SEXP _eflows_allocate(SEXP flowSEXP, SEXP socSEXP, SEXP volSEXP, SEXP shareSEXP, SEXP levelSEXP, SEXP activeSEXP, SEXP effSEXP, SEXP capSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,9 +23,62 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// subset_range
+NumericVector subset_range(NumericVector vec, int start, int end);
+RcppExport SEXP _eflows_subset_range(SEXP vecSEXP, SEXP startSEXP, SEXP endSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< int >::type start(startSEXP);
+    Rcpp::traits::input_parameter< int >::type end(endSEXP);
+    rcpp_result_gen = Rcpp::wrap(subset_range(vec, start, end));
+    return rcpp_result_gen;
+END_RCPP
+}
+// depreciate
+float depreciate(float x, float depreciation);
+RcppExport SEXP _eflows_depreciate(SEXP xSEXP, SEXP depreciationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< float >::type x(xSEXP);
+    Rcpp::traits::input_parameter< float >::type depreciation(depreciationSEXP);
+    rcpp_result_gen = Rcpp::wrap(depreciate(x, depreciation));
+    return rcpp_result_gen;
+END_RCPP
+}
+// seq_depreciated
+NumericVector seq_depreciated(int length, float depreciation);
+RcppExport SEXP _eflows_seq_depreciated(SEXP lengthSEXP, SEXP depreciationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type length(lengthSEXP);
+    Rcpp::traits::input_parameter< float >::type depreciation(depreciationSEXP);
+    rcpp_result_gen = Rcpp::wrap(seq_depreciated(length, depreciation));
+    return rcpp_result_gen;
+END_RCPP
+}
+// backshift
+NumericMatrix backshift(NumericMatrix matrix, NumericVector price, int horizon, float depreciation, float cap, float size);
+RcppExport SEXP _eflows_backshift(SEXP matrixSEXP, SEXP priceSEXP, SEXP horizonSEXP, SEXP depreciationSEXP, SEXP capSEXP, SEXP sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type matrix(matrixSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type price(priceSEXP);
+    Rcpp::traits::input_parameter< int >::type horizon(horizonSEXP);
+    Rcpp::traits::input_parameter< float >::type depreciation(depreciationSEXP);
+    Rcpp::traits::input_parameter< float >::type cap(capSEXP);
+    Rcpp::traits::input_parameter< float >::type size(sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(backshift(matrix, price, horizon, depreciation, cap, size));
+    return rcpp_result_gen;
+END_RCPP
+}
 // foreshift
 NumericMatrix foreshift(NumericMatrix matrix, IntegerVector flex_step, float cap, bool cap_spread, bool foresee, NumericVector solar);
-RcppExport SEXP eflows_foreshift(SEXP matrixSEXP, SEXP flex_stepSEXP, SEXP capSEXP, SEXP cap_spreadSEXP, SEXP foreseeSEXP, SEXP solarSEXP) {
+RcppExport SEXP _eflows_foreshift(SEXP matrixSEXP, SEXP flex_stepSEXP, SEXP capSEXP, SEXP cap_spreadSEXP, SEXP foreseeSEXP, SEXP solarSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -41,7 +94,7 @@ END_RCPP
 }
 // divide
 NumericVector divide(float x, float precision);
-RcppExport SEXP eflows_divide(SEXP xSEXP, SEXP precisionSEXP) {
+RcppExport SEXP _eflows_divide(SEXP xSEXP, SEXP precisionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -53,7 +106,7 @@ END_RCPP
 }
 // present
 NumericVector present(NumericVector vec, int start, int end);
-RcppExport SEXP eflows_present(SEXP vecSEXP, SEXP startSEXP, SEXP endSEXP) {
+RcppExport SEXP _eflows_present(SEXP vecSEXP, SEXP startSEXP, SEXP endSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -66,7 +119,7 @@ END_RCPP
 }
 // xts_index
 DatetimeVector xts_index(NumericMatrix xts_mtx);
-RcppExport SEXP eflows_xts_index(SEXP xts_mtxSEXP) {
+RcppExport SEXP _eflows_xts_index(SEXP xts_mtxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -77,7 +130,7 @@ END_RCPP
 }
 // signif_ccp
 double signif_ccp(double value, int digits);
-RcppExport SEXP eflows_signif_ccp(SEXP valueSEXP, SEXP digitsSEXP) {
+RcppExport SEXP _eflows_signif_ccp(SEXP valueSEXP, SEXP digitsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -89,7 +142,7 @@ END_RCPP
 }
 // tell_min
 int tell_min(NumericVector x);
-RcppExport SEXP eflows_tell_min(SEXP xSEXP) {
+RcppExport SEXP _eflows_tell_min(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -100,7 +153,7 @@ END_RCPP
 }
 // signif_step
 NumericVector signif_step(NumericMatrix matrix, float denom);
-RcppExport SEXP eflows_signif_step(SEXP matrixSEXP, SEXP denomSEXP) {
+RcppExport SEXP _eflows_signif_step(SEXP matrixSEXP, SEXP denomSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -112,14 +165,18 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"eflows_allocate", (DL_FUNC) &eflows_allocate, 8},
-    {"eflows_foreshift", (DL_FUNC) &eflows_foreshift, 6},
-    {"eflows_divide", (DL_FUNC) &eflows_divide, 2},
-    {"eflows_present", (DL_FUNC) &eflows_present, 3},
-    {"eflows_xts_index", (DL_FUNC) &eflows_xts_index, 1},
-    {"eflows_signif_ccp", (DL_FUNC) &eflows_signif_ccp, 2},
-    {"eflows_tell_min", (DL_FUNC) &eflows_tell_min, 1},
-    {"eflows_signif_step", (DL_FUNC) &eflows_signif_step, 2},
+    {"_eflows_allocate", (DL_FUNC) &_eflows_allocate, 8},
+    {"_eflows_subset_range", (DL_FUNC) &_eflows_subset_range, 3},
+    {"_eflows_depreciate", (DL_FUNC) &_eflows_depreciate, 2},
+    {"_eflows_seq_depreciated", (DL_FUNC) &_eflows_seq_depreciated, 2},
+    {"_eflows_backshift", (DL_FUNC) &_eflows_backshift, 6},
+    {"_eflows_foreshift", (DL_FUNC) &_eflows_foreshift, 6},
+    {"_eflows_divide", (DL_FUNC) &_eflows_divide, 2},
+    {"_eflows_present", (DL_FUNC) &_eflows_present, 3},
+    {"_eflows_xts_index", (DL_FUNC) &_eflows_xts_index, 1},
+    {"_eflows_signif_ccp", (DL_FUNC) &_eflows_signif_ccp, 2},
+    {"_eflows_tell_min", (DL_FUNC) &_eflows_tell_min, 1},
+    {"_eflows_signif_step", (DL_FUNC) &_eflows_signif_step, 2},
     {NULL, NULL, 0}
 };
 
