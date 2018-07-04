@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include"../inst/include/myheader.hpp"
 using namespace Rcpp;
 // [[Rcpp::plugins("cpp11")]]
 

@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // allocate
 List allocate(double flow, NumericVector soc, NumericVector vol, NumericVector share, NumericVector level, LogicalVector active, NumericVector eff, NumericVector cap);
-RcppExport SEXP eflows_allocate(SEXP flowSEXP, SEXP socSEXP, SEXP volSEXP, SEXP shareSEXP, SEXP levelSEXP, SEXP activeSEXP, SEXP effSEXP, SEXP capSEXP) {
+RcppExport SEXP _eflows_allocate(SEXP flowSEXP, SEXP socSEXP, SEXP volSEXP, SEXP shareSEXP, SEXP levelSEXP, SEXP activeSEXP, SEXP effSEXP, SEXP capSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -25,7 +25,7 @@ END_RCPP
 }
 // subset_range
 NumericVector subset_range(NumericVector vec, int start, int end);
-RcppExport SEXP eflows_subset_range(SEXP vecSEXP, SEXP startSEXP, SEXP endSEXP) {
+RcppExport SEXP _eflows_subset_range(SEXP vecSEXP, SEXP startSEXP, SEXP endSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -38,7 +38,7 @@ END_RCPP
 }
 // depreciate
 float depreciate(float x, float depreciation);
-RcppExport SEXP eflows_depreciate(SEXP xSEXP, SEXP depreciationSEXP) {
+RcppExport SEXP _eflows_depreciate(SEXP xSEXP, SEXP depreciationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -50,7 +50,7 @@ END_RCPP
 }
 // seq_depreciated
 NumericVector seq_depreciated(int length, float depreciation);
-RcppExport SEXP eflows_seq_depreciated(SEXP lengthSEXP, SEXP depreciationSEXP) {
+RcppExport SEXP _eflows_seq_depreciated(SEXP lengthSEXP, SEXP depreciationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -62,7 +62,7 @@ END_RCPP
 }
 // backshift
 NumericMatrix backshift(NumericMatrix matrix, NumericVector price, int horizon, float depreciation, float cap, float size);
-RcppExport SEXP eflows_backshift(SEXP matrixSEXP, SEXP priceSEXP, SEXP horizonSEXP, SEXP depreciationSEXP, SEXP capSEXP, SEXP sizeSEXP) {
+RcppExport SEXP _eflows_backshift(SEXP matrixSEXP, SEXP priceSEXP, SEXP horizonSEXP, SEXP depreciationSEXP, SEXP capSEXP, SEXP sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -78,7 +78,7 @@ END_RCPP
 }
 // foreshift
 NumericMatrix foreshift(NumericMatrix matrix, IntegerVector flex_step, float cap, bool cap_spread, bool foresee, NumericVector solar);
-RcppExport SEXP eflows_foreshift(SEXP matrixSEXP, SEXP flex_stepSEXP, SEXP capSEXP, SEXP cap_spreadSEXP, SEXP foreseeSEXP, SEXP solarSEXP) {
+RcppExport SEXP _eflows_foreshift(SEXP matrixSEXP, SEXP flex_stepSEXP, SEXP capSEXP, SEXP cap_spreadSEXP, SEXP foreseeSEXP, SEXP solarSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -92,9 +92,38 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// model_c
+DataFrame model_c(DataFrame df, DataFrame df_battery, double initial_soc, double to_battery_eff, double from_battery_eff, double to_ev_eff, double from_ev_eff, double max_battery_rate, double ev_priority_charge, double ev_priority_discharge, double grid_capacity, bool use_grid_cap, bool use_v2g, double charge_thold, double v2g_thold, double pref_charge_stationary, double pref_discharge_stationary, double pref_charge_ev, double pref_discharge_ev);
+RcppExport SEXP _eflows_model_c(SEXP dfSEXP, SEXP df_batterySEXP, SEXP initial_socSEXP, SEXP to_battery_effSEXP, SEXP from_battery_effSEXP, SEXP to_ev_effSEXP, SEXP from_ev_effSEXP, SEXP max_battery_rateSEXP, SEXP ev_priority_chargeSEXP, SEXP ev_priority_dischargeSEXP, SEXP grid_capacitySEXP, SEXP use_grid_capSEXP, SEXP use_v2gSEXP, SEXP charge_tholdSEXP, SEXP v2g_tholdSEXP, SEXP pref_charge_stationarySEXP, SEXP pref_discharge_stationarySEXP, SEXP pref_charge_evSEXP, SEXP pref_discharge_evSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type df_battery(df_batterySEXP);
+    Rcpp::traits::input_parameter< double >::type initial_soc(initial_socSEXP);
+    Rcpp::traits::input_parameter< double >::type to_battery_eff(to_battery_effSEXP);
+    Rcpp::traits::input_parameter< double >::type from_battery_eff(from_battery_effSEXP);
+    Rcpp::traits::input_parameter< double >::type to_ev_eff(to_ev_effSEXP);
+    Rcpp::traits::input_parameter< double >::type from_ev_eff(from_ev_effSEXP);
+    Rcpp::traits::input_parameter< double >::type max_battery_rate(max_battery_rateSEXP);
+    Rcpp::traits::input_parameter< double >::type ev_priority_charge(ev_priority_chargeSEXP);
+    Rcpp::traits::input_parameter< double >::type ev_priority_discharge(ev_priority_dischargeSEXP);
+    Rcpp::traits::input_parameter< double >::type grid_capacity(grid_capacitySEXP);
+    Rcpp::traits::input_parameter< bool >::type use_grid_cap(use_grid_capSEXP);
+    Rcpp::traits::input_parameter< bool >::type use_v2g(use_v2gSEXP);
+    Rcpp::traits::input_parameter< double >::type charge_thold(charge_tholdSEXP);
+    Rcpp::traits::input_parameter< double >::type v2g_thold(v2g_tholdSEXP);
+    Rcpp::traits::input_parameter< double >::type pref_charge_stationary(pref_charge_stationarySEXP);
+    Rcpp::traits::input_parameter< double >::type pref_discharge_stationary(pref_discharge_stationarySEXP);
+    Rcpp::traits::input_parameter< double >::type pref_charge_ev(pref_charge_evSEXP);
+    Rcpp::traits::input_parameter< double >::type pref_discharge_ev(pref_discharge_evSEXP);
+    rcpp_result_gen = Rcpp::wrap(model_c(df, df_battery, initial_soc, to_battery_eff, from_battery_eff, to_ev_eff, from_ev_eff, max_battery_rate, ev_priority_charge, ev_priority_discharge, grid_capacity, use_grid_cap, use_v2g, charge_thold, v2g_thold, pref_charge_stationary, pref_discharge_stationary, pref_charge_ev, pref_discharge_ev));
+    return rcpp_result_gen;
+END_RCPP
+}
 // divide
 NumericVector divide(float x, float precision);
-RcppExport SEXP eflows_divide(SEXP xSEXP, SEXP precisionSEXP) {
+RcppExport SEXP _eflows_divide(SEXP xSEXP, SEXP precisionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -106,7 +135,7 @@ END_RCPP
 }
 // present
 NumericVector present(NumericVector vec, int start, int end);
-RcppExport SEXP eflows_present(SEXP vecSEXP, SEXP startSEXP, SEXP endSEXP) {
+RcppExport SEXP _eflows_present(SEXP vecSEXP, SEXP startSEXP, SEXP endSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -119,7 +148,7 @@ END_RCPP
 }
 // xts_index
 DatetimeVector xts_index(NumericMatrix xts_mtx);
-RcppExport SEXP eflows_xts_index(SEXP xts_mtxSEXP) {
+RcppExport SEXP _eflows_xts_index(SEXP xts_mtxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -130,7 +159,7 @@ END_RCPP
 }
 // signif_ccp
 double signif_ccp(double value, int digits);
-RcppExport SEXP eflows_signif_ccp(SEXP valueSEXP, SEXP digitsSEXP) {
+RcppExport SEXP _eflows_signif_ccp(SEXP valueSEXP, SEXP digitsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -142,7 +171,7 @@ END_RCPP
 }
 // tell_min
 int tell_min(NumericVector x);
-RcppExport SEXP eflows_tell_min(SEXP xSEXP) {
+RcppExport SEXP _eflows_tell_min(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -153,7 +182,7 @@ END_RCPP
 }
 // signif_step
 NumericVector signif_step(NumericMatrix matrix, float denom);
-RcppExport SEXP eflows_signif_step(SEXP matrixSEXP, SEXP denomSEXP) {
+RcppExport SEXP _eflows_signif_step(SEXP matrixSEXP, SEXP denomSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -165,18 +194,19 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"eflows_allocate", (DL_FUNC) &eflows_allocate, 8},
-    {"eflows_subset_range", (DL_FUNC) &eflows_subset_range, 3},
-    {"eflows_depreciate", (DL_FUNC) &eflows_depreciate, 2},
-    {"eflows_seq_depreciated", (DL_FUNC) &eflows_seq_depreciated, 2},
-    {"eflows_backshift", (DL_FUNC) &eflows_backshift, 6},
-    {"eflows_foreshift", (DL_FUNC) &eflows_foreshift, 6},
-    {"eflows_divide", (DL_FUNC) &eflows_divide, 2},
-    {"eflows_present", (DL_FUNC) &eflows_present, 3},
-    {"eflows_xts_index", (DL_FUNC) &eflows_xts_index, 1},
-    {"eflows_signif_ccp", (DL_FUNC) &eflows_signif_ccp, 2},
-    {"eflows_tell_min", (DL_FUNC) &eflows_tell_min, 1},
-    {"eflows_signif_step", (DL_FUNC) &eflows_signif_step, 2},
+    {"_eflows_allocate", (DL_FUNC) &_eflows_allocate, 8},
+    {"_eflows_subset_range", (DL_FUNC) &_eflows_subset_range, 3},
+    {"_eflows_depreciate", (DL_FUNC) &_eflows_depreciate, 2},
+    {"_eflows_seq_depreciated", (DL_FUNC) &_eflows_seq_depreciated, 2},
+    {"_eflows_backshift", (DL_FUNC) &_eflows_backshift, 6},
+    {"_eflows_foreshift", (DL_FUNC) &_eflows_foreshift, 6},
+    {"_eflows_model_c", (DL_FUNC) &_eflows_model_c, 19},
+    {"_eflows_divide", (DL_FUNC) &_eflows_divide, 2},
+    {"_eflows_present", (DL_FUNC) &_eflows_present, 3},
+    {"_eflows_xts_index", (DL_FUNC) &_eflows_xts_index, 1},
+    {"_eflows_signif_ccp", (DL_FUNC) &_eflows_signif_ccp, 2},
+    {"_eflows_tell_min", (DL_FUNC) &_eflows_tell_min, 1},
+    {"_eflows_signif_step", (DL_FUNC) &_eflows_signif_step, 2},
     {NULL, NULL, 0}
 };
 

@@ -20,19 +20,19 @@
 #' energy flow, and a double containing the energy that was not shared
 #' @export
 allocate <- function(flow, soc, vol, share = as.numeric( c(1)), level = as.numeric( c(1)), active = as.logical( c(1)), eff = as.numeric( c(1)), cap = as.numeric( c(0))) {
-    .Call('eflows_allocate', PACKAGE = 'eflows', flow, soc, vol, share, level, active, eff, cap)
+    .Call('_eflows_allocate', PACKAGE = 'eflows', flow, soc, vol, share, level, active, eff, cap)
 }
 
 subset_range <- function(vec, start, end) {
-    .Call('eflows_subset_range', PACKAGE = 'eflows', vec, start, end)
+    .Call('_eflows_subset_range', PACKAGE = 'eflows', vec, start, end)
 }
 
 depreciate <- function(x, depreciation) {
-    .Call('eflows_depreciate', PACKAGE = 'eflows', x, depreciation)
+    .Call('_eflows_depreciate', PACKAGE = 'eflows', x, depreciation)
 }
 
 seq_depreciated <- function(length, depreciation) {
-    .Call('eflows_seq_depreciated', PACKAGE = 'eflows', length, depreciation)
+    .Call('_eflows_seq_depreciated', PACKAGE = 'eflows', length, depreciation)
 }
 
 #' Shift energy consumption towards the past.
@@ -41,7 +41,7 @@ seq_depreciated <- function(length, depreciation) {
 #' @return A matrix, or an xts object if the index provided are a POSIXct object.
 #' @export
 backshift <- function(matrix, price, horizon, depreciation, cap, size) {
-    .Call('eflows_backshift', PACKAGE = 'eflows', matrix, price, horizon, depreciation, cap, size)
+    .Call('_eflows_backshift', PACKAGE = 'eflows', matrix, price, horizon, depreciation, cap, size)
 }
 
 #' Shift energy consumption towards the future.
@@ -65,30 +65,34 @@ backshift <- function(matrix, price, horizon, depreciation, cap, size) {
 #' @return A matrix, or an xts object if the index provided are a POSIXct object.
 #' @export
 foreshift <- function(matrix, flex_step, cap = 0, cap_spread = TRUE, foresee = TRUE, solar = as.numeric( c(0))) {
-    .Call('eflows_foreshift', PACKAGE = 'eflows', matrix, flex_step, cap, cap_spread, foresee, solar)
+    .Call('_eflows_foreshift', PACKAGE = 'eflows', matrix, flex_step, cap, cap_spread, foresee, solar)
+}
+
+model_c <- function(df, df_battery, initial_soc, to_battery_eff, from_battery_eff, to_ev_eff, from_ev_eff, max_battery_rate, ev_priority_charge = 0.5, ev_priority_discharge = 0.5, grid_capacity = 10, use_grid_cap = TRUE, use_v2g = TRUE, charge_thold = 0.7, v2g_thold = 0.9, pref_charge_stationary = 0.5, pref_discharge_stationary = 0.5, pref_charge_ev = 0.5, pref_discharge_ev = 0.5) {
+    .Call('_eflows_model_c', PACKAGE = 'eflows', df, df_battery, initial_soc, to_battery_eff, from_battery_eff, to_ev_eff, from_ev_eff, max_battery_rate, ev_priority_charge, ev_priority_discharge, grid_capacity, use_grid_cap, use_v2g, charge_thold, v2g_thold, pref_charge_stationary, pref_discharge_stationary, pref_charge_ev, pref_discharge_ev)
 }
 
 divide <- function(x, precision = 0.01) {
-    .Call('eflows_divide', PACKAGE = 'eflows', x, precision)
+    .Call('_eflows_divide', PACKAGE = 'eflows', x, precision)
 }
 
 present <- function(vec, start, end) {
-    .Call('eflows_present', PACKAGE = 'eflows', vec, start, end)
+    .Call('_eflows_present', PACKAGE = 'eflows', vec, start, end)
 }
 
 xts_index <- function(xts_mtx) {
-    .Call('eflows_xts_index', PACKAGE = 'eflows', xts_mtx)
+    .Call('_eflows_xts_index', PACKAGE = 'eflows', xts_mtx)
 }
 
 signif_ccp <- function(value, digits) {
-    .Call('eflows_signif_ccp', PACKAGE = 'eflows', value, digits)
+    .Call('_eflows_signif_ccp', PACKAGE = 'eflows', value, digits)
 }
 
 tell_min <- function(x) {
-    .Call('eflows_tell_min', PACKAGE = 'eflows', x)
+    .Call('_eflows_tell_min', PACKAGE = 'eflows', x)
 }
 
 signif_step <- function(matrix, denom) {
-    .Call('eflows_signif_step', PACKAGE = 'eflows', matrix, denom)
+    .Call('_eflows_signif_step', PACKAGE = 'eflows', matrix, denom)
 }
 
