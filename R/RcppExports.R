@@ -66,6 +66,13 @@ backshift <- function(matrix, price, horizon, depreciation, cap, size) {
 #' @export
 foreshift <- function(matrix, flex_step, cap = 0, cap_spread = TRUE, foresee = TRUE, solar = as.numeric( c(0))) {
     .Call('_eflows_foreshift', PACKAGE = 'eflows', matrix, flex_step, cap, cap_spread, foresee, solar)
+<<<<<<< HEAD
+=======
+}
+
+model_c <- function(df, df_battery, initial_soc, to_battery_eff, from_battery_eff, to_ev_eff, from_ev_eff, max_battery_rate, ev_priority_charge = 0.5, ev_priority_discharge = 0.5, grid_capacity = 10, use_grid_cap = TRUE, use_v2g = TRUE, charge_thold = 0.7, v2g_thold = 0.9, pref_charge_stationary = 0.5, pref_discharge_stationary = 0.5, pref_charge_ev = 0.5, pref_discharge_ev = 0.5) {
+    .Call('_eflows_model_c', PACKAGE = 'eflows', df, df_battery, initial_soc, to_battery_eff, from_battery_eff, to_ev_eff, from_ev_eff, max_battery_rate, ev_priority_charge, ev_priority_discharge, grid_capacity, use_grid_cap, use_v2g, charge_thold, v2g_thold, pref_charge_stationary, pref_discharge_stationary, pref_charge_ev, pref_discharge_ev)
+>>>>>>> ad563bb87f54176b5e4a6b8ed81b821bc58af4a2
 }
 
 divide <- function(x, precision = 0.01) {

@@ -92,6 +92,35 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// model_c
+DataFrame model_c(DataFrame df, DataFrame df_battery, double initial_soc, double to_battery_eff, double from_battery_eff, double to_ev_eff, double from_ev_eff, double max_battery_rate, double ev_priority_charge, double ev_priority_discharge, double grid_capacity, bool use_grid_cap, bool use_v2g, double charge_thold, double v2g_thold, double pref_charge_stationary, double pref_discharge_stationary, double pref_charge_ev, double pref_discharge_ev);
+RcppExport SEXP _eflows_model_c(SEXP dfSEXP, SEXP df_batterySEXP, SEXP initial_socSEXP, SEXP to_battery_effSEXP, SEXP from_battery_effSEXP, SEXP to_ev_effSEXP, SEXP from_ev_effSEXP, SEXP max_battery_rateSEXP, SEXP ev_priority_chargeSEXP, SEXP ev_priority_dischargeSEXP, SEXP grid_capacitySEXP, SEXP use_grid_capSEXP, SEXP use_v2gSEXP, SEXP charge_tholdSEXP, SEXP v2g_tholdSEXP, SEXP pref_charge_stationarySEXP, SEXP pref_discharge_stationarySEXP, SEXP pref_charge_evSEXP, SEXP pref_discharge_evSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type df_battery(df_batterySEXP);
+    Rcpp::traits::input_parameter< double >::type initial_soc(initial_socSEXP);
+    Rcpp::traits::input_parameter< double >::type to_battery_eff(to_battery_effSEXP);
+    Rcpp::traits::input_parameter< double >::type from_battery_eff(from_battery_effSEXP);
+    Rcpp::traits::input_parameter< double >::type to_ev_eff(to_ev_effSEXP);
+    Rcpp::traits::input_parameter< double >::type from_ev_eff(from_ev_effSEXP);
+    Rcpp::traits::input_parameter< double >::type max_battery_rate(max_battery_rateSEXP);
+    Rcpp::traits::input_parameter< double >::type ev_priority_charge(ev_priority_chargeSEXP);
+    Rcpp::traits::input_parameter< double >::type ev_priority_discharge(ev_priority_dischargeSEXP);
+    Rcpp::traits::input_parameter< double >::type grid_capacity(grid_capacitySEXP);
+    Rcpp::traits::input_parameter< bool >::type use_grid_cap(use_grid_capSEXP);
+    Rcpp::traits::input_parameter< bool >::type use_v2g(use_v2gSEXP);
+    Rcpp::traits::input_parameter< double >::type charge_thold(charge_tholdSEXP);
+    Rcpp::traits::input_parameter< double >::type v2g_thold(v2g_tholdSEXP);
+    Rcpp::traits::input_parameter< double >::type pref_charge_stationary(pref_charge_stationarySEXP);
+    Rcpp::traits::input_parameter< double >::type pref_discharge_stationary(pref_discharge_stationarySEXP);
+    Rcpp::traits::input_parameter< double >::type pref_charge_ev(pref_charge_evSEXP);
+    Rcpp::traits::input_parameter< double >::type pref_discharge_ev(pref_discharge_evSEXP);
+    rcpp_result_gen = Rcpp::wrap(model_c(df, df_battery, initial_soc, to_battery_eff, from_battery_eff, to_ev_eff, from_ev_eff, max_battery_rate, ev_priority_charge, ev_priority_discharge, grid_capacity, use_grid_cap, use_v2g, charge_thold, v2g_thold, pref_charge_stationary, pref_discharge_stationary, pref_charge_ev, pref_discharge_ev));
+    return rcpp_result_gen;
+END_RCPP
+}
 // divide
 NumericVector divide(float x, float precision);
 RcppExport SEXP _eflows_divide(SEXP xSEXP, SEXP precisionSEXP) {
@@ -171,6 +200,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_eflows_seq_depreciated", (DL_FUNC) &_eflows_seq_depreciated, 2},
     {"_eflows_backshift", (DL_FUNC) &_eflows_backshift, 6},
     {"_eflows_foreshift", (DL_FUNC) &_eflows_foreshift, 6},
+<<<<<<< HEAD
+=======
+    {"_eflows_model_c", (DL_FUNC) &_eflows_model_c, 19},
+>>>>>>> ad563bb87f54176b5e4a6b8ed81b821bc58af4a2
     {"_eflows_divide", (DL_FUNC) &_eflows_divide, 2},
     {"_eflows_present", (DL_FUNC) &_eflows_present, 3},
     {"_eflows_xts_index", (DL_FUNC) &_eflows_xts_index, 1},
