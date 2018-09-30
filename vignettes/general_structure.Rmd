@@ -87,38 +87,22 @@ R functions wrap the C++ internals. In this middle layer there are a couple of m
 
 - There is input validation (I try to be strict in eflows about the sort of data accepted, and to make the functions "fail fast" instead of giving some obscure error)
 - There is input transformation: sometimes the arguments that are consumed by the C++ function are of different classes that the ones passed onto the R function. In addition, I try to be flexible with the input of the R functions, in the sense that instead of a "list of one", the function can accept that object, and the middle layer will include it into a list before passing it to C++
+- The default arguments are created here (C++ functions do not have default arguments)
 
 While it is possible to work directly with these functions, the intention is to manage the expectable entropy of the projects by providing a system of classes to organize and work with the data. 
 
+The R6 functions are named using snake_case, as all the exposed elements of eflows. 
+
 - R6 classes (exposed)
+The R6 class system makes organizes the data in a sensible way and uses the R functions to modify accordingly this data. 
 
+The highly structured R6 classes are also perfect to extend the functionalities of eflows. An immediate case is the use of visualizations, using the auxiliary package eflows.viz. While eflows tries to have the least amount possible of dependencies, eflows.viz capitalizes in shiny widgets and dygraphs time diagram to show the results obtained from the methods. If the data structure were every time different, the visualization task would be difficult. With the R6 classes, it is not. 
 
+The methods (like `add_ev()`) do input validatation, meaning that no data that doesn't fit a rather strict conditions can be included in the e_frame object. An argument allows to desactivate this validation, however, to scratch few milliseconds in a production environment. 
 
+In general, methods are used over R6 classes when building up the object or when the object "uses the data over itself". Active bindings probably help in developing further these possibilities. Functions are used over the objects for the rest of the cases, particularly when the obejctive is to "extract" or "visualize" the information.  
 
+The structure provided by the R6 classes also allows to build around eflows both for the input and the further processing of data. It is easy to develop further functions to generate suitable inputs from, say, third party APIs, run some eflows functions, and then process the output as APIs calls that generate further effect down the road. 
 
+An additional feature of eflows is the possibility of implementing it within the OpenCPU framework, which allows to work with the functions as they were API requests. While the R6 classes will be probably too cumbersome to work over API requests, OpenCPU could allow highy customized scripts to run using perhaps their own data structures (not necessarily the predefined R6 classes) and making http requests, what could be a perfect way to combine eflows with node.js services or serverless functions. 
 
-
-
-
-
------------------
-
-The C++ functions require to pass each argument in an individual way, while the R functions are made to work with methods, and are more directly executable. 
-
-C++ functions are named in camelCase and suffixed by Cpp, to let clear that are the "core" functions. 
-
-Some functions may also include or not the suffix Unsafe, to indicate that are faster but have no way to control wether they are doing the right check control of inputs
-
-Functional and OO design: the objects "are stuff" that are subject to functions. Manage project entropy
-
-Nesting: Objects&methods(R functions(Cppfunctions())
-Then, the objects are manipulated by other functions.
-
-Objects: 
-- Use functions to modify objects, or to "exercise" something over objects
-- Use methods so you "extract something through an object", or to get a result from an object that doesn't depend of other stuff except the fields of an object. 
-Most probably, more than objects what you want to do is to create active bindings so you can "extract" something while computating it. 
-
-At least you can make the methods of a call "idempotent". If you call them twice, it is ok, in this way the object behaves a bit in a "quasifunctional" way. 
-
-Remember: you can change R6 classes with $set
