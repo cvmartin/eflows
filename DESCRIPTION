@@ -18,7 +18,9 @@ LazyData: true
 Imports: zoo, 
     xts,
     magrittr,
-    Rcpp
+    Rcpp, 
+    RcppArmadillo, 
+    R6
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown,
@@ -26,6 +28,6 @@ Suggests: knitr,
     dygraphs,
     covr
 VignetteBuilder: knitr
-LinkingTo: Rcpp
+LinkingTo: Rcpp, RcppArmadillo
 URL: https://github.com/cvmartin/eflows
 BugReports: https://github.com/cvmartin/eflows/issues

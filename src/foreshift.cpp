@@ -1,109 +1,228 @@
-#include <Rcpp.h>
-#include"../inst/include/myheader.hpp"
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
 using namespace Rcpp;
 
-
-//' Shift energy consumption towards the future.
-//'
-//' In function of a fitting curve and the flexibility time, the consumption of
-//' energy is delayed.
-//' @param matrix Numeric matrix, each row an observation in time (it can be a time series)
-//' and each column representing the flexibility of demand, increasing towards the right.
-//' @param flex_step Integer vector of same length of the column of `matrix`, indicating
-//' the number of timesteps the demand can be delayed. Normally, the first integer is `0`,
-//' indicating the `solid` demand.
-//' @param cap If higher than 0, indicates the maximum capacity of flexible demand
-//' that can be allocated in a timestep.
-//' @param cap_spread Boolean. if true, the cap is never exceeded, and instead the
-//' consumption is displaced towards the future, and resolved as soon as possible.
-//' @param foresee Boolean. If false, it indicates a complete lack of knowledge of the
-//' future flexible demand in the timeline.
-//' @param solar If present, the fitting curve is calculated substracting solar
-//' from the demand.
-//'
-//' @return A matrix, or an xts object if the index provided are a POSIXct object.
-//' @export
+// TO CALL FROM R FUNCTION
 // [[Rcpp::export]]
-NumericMatrix foreshift(NumericMatrix matrix,
-                        IntegerVector flex_step,
-                        float cap = 0,
-                        bool cap_spread = true,
-                        bool foresee = true,
-                        NumericVector solar = NumericVector::create(0)){
+NumericMatrix formatFlexSteps(NumericMatrix matrix,
+                              IntegerVector flex_step,
+                              int max_step = -1) {
 
-  // Define how many levels are there
-  IntegerVector flex_lvl = seq(0, max(flex_step));
+  IntegerVector flex_lvl = seq(1, max(flex_step));
 
-  // Two empty matrices (the second one has to be a deep copy of the first one)
+  if (max_step != -1) {
+    flex_lvl = seq(1, max_step);
+  }
+
+  // Empty matrix with the right dimensions
   NumericMatrix mtx(matrix.nrow(), flex_lvl.size());
-  NumericMatrix flex_mtx(clone(mtx));
 
   // Allocate the columns to its right place in mtx, using flex_step as index
   for (int i=0; i < flex_step.size(); ++i) {
-    mtx(_ , flex_step[i]) = matrix(_ , i);
+    mtx(_ , flex_step[i]-1) = matrix(_ , i);
   }
 
-  int n_row = mtx.nrow();
-  int n_col = mtx.ncol();
+  return mtx;
+}
 
-  // Define solid consumption and total consumption
-  // IS THIS THE PROBLEM; SHOULD THIS BE A DEEP COPY??
-  NumericVector solid_vct = mtx( _ ,0);
-  NumericVector flex_vct(n_row);
+// TO CALL INTERNALLY
 
-  // The first column of the flex matrix is the solid
-  flex_mtx(_,0) = clone(solid_vct);
+// [[Rcpp::export]]
+NumericVector divideInChunks(float x, float precision){
+  if (x == 0) return 0;
+  int full = floor(x/precision);
+  float left = fmod(x, precision);
+  NumericVector v = rep(precision, full);
+  v.push_back(left);
+  return v;
+}
 
-  // size of the chunks to split the columns in
-  NumericVector chunks_size = signif_step(mtx, 30);
 
-  for (int e=1; e < n_col; ++e) {
-    for (int i=0; i < n_row; ++i) {
+// [[Rcpp::export]]
+int whichMin (NumericVector x){
+  int res = 0;
+  LogicalVector finite = is_finite(x);
+  for (int i=0; i < x.size(); ++i) {
+    if ((finite[i] == 1) & ((x[i] < x[res]) | (finite[res] == 0))) res = i;
+  }
+  return res;
+}
 
-      NumericVector chunks = divide(mtx(i,e), chunks_size[e]);
 
-      // At the end of the graph, the flexible is not considered
-      if ( i+1 >= n_row - e) chunks = 0;
 
-      for (int j=0; j < chunks.size(); ++j) {
+// [[Rcpp::export]]
+NumericVector sliceCurrent (NumericVector vec,
+                            int start,
+                            int end) {
 
-        // Recalculate fitting curve
-        NumericVector ifit = present(solid_vct,i,e) + present(flex_vct,i,e);
-        // if applied solar, modify it
-        if (solar.size() != 1){
-          ifit = ifit - present(solar,i,e);
-        }
-        // Apply cap, if necessary
-        NumericVector iflex = present(flex_vct,i,e);
+  int true_end = end + 1;
+  if (start + end >= vec.size()) true_end = 0; //1+ ?
+      return vec.import(vec.begin()+start , vec.begin() + start + true_end);
+}
 
-        if (is_true(any(iflex < cap)) & (cap > 0)) {
-          for (int k=0; k < iflex.size(); ++k) {
-            if (iflex[k] >= cap) ifit[k] = NA_REAL;
+// [[Rcpp::export]]
+Environment envCurrent(Environment input,
+                       Environment out,
+                       int start,
+                       int span) {
+  // returns an environment output with all variables
+  // cut by present.
+  CharacterVector fname = as<CharacterVector>(input.ls(true));
+  int n = fname.length();
+
+  for(int i = 0; i < n; ++i) {
+    std::string thename = as<std::string>(fname[i]);
+    out[thename] = sliceCurrent(input[thename], start, span);
+  }
+  return out;
+}
+
+// [[Rcpp:: export ()]]
+arma::mat asMat (NumericMatrix x) {
+  arma::mat y = as<arma::mat>(x) ;
+  return(y) ;
+}
+
+
+// [[Rcpp:: export ()]]
+NumericMatrix asNumericMatrix (arma::mat x) {
+  NumericMatrix y = wrap(x) ;
+  return(y) ;
+}
+
+
+// [[Rcpp::export]]
+arma::cube listToCube (List mtx_list){
+
+  NumericMatrix zmtx = mtx_list[0];
+  arma::cube ncube(zmtx.nrow(),zmtx.ncol(),mtx_list.size());
+  ncube.zeros();
+
+  for (int i=0; i < mtx_list.size(); ++i) {
+    ncube.slice(i) = asMat(mtx_list[i]);
+  }
+  return(ncube);
+}
+
+// [[Rcpp::export]]
+List cubeToList (arma::cube xcube){
+
+  List nlist = List::create();
+  int n = xcube.n_slices;
+
+  for (int i=0; i < n; ++i) {
+    nlist.push_back(xcube.slice(i));
+  }
+  return(nlist);
+}
+
+
+
+// [[Rcpp::export]]
+List foreShiftCpp(List mtx_list,
+                  Environment env_fit,
+                  Language call,
+                  Environment env_current,
+                  Language def_demand,
+                  double cap = 0,
+                  bool cap_spread = true
+){
+  // define initial curve
+  NumericVector fit_curve_initial = Rf_eval(call, env_fit);
+
+  //
+
+    // define initial demand from the argument passed from above
+  NumericVector cdemand = Rf_eval(def_demand, env_fit);
+  NumericVector zdemand = clone(cdemand);
+  // and an empty vector for the flexible demand
+  NumericVector fdemand(zdemand.length(), 0);
+
+  // build a cube with the input
+  arma::cube xcube = listToCube(mtx_list);
+
+  // define an empty cube for the results
+  arma::cube fcube = xcube;
+  fcube.zeros();
+  // Chunk size for object and column (mean/30)
+  arma::mat mtx_cmean = mean(xcube, 0)/30;
+
+  // if same column and row, the objects distribute the chunks proportionally
+  arma::mat mtx_cssumn = sum(xcube, 2);
+  arma::cube pcube = xcube.each_slice() / mtx_cssumn;
+
+  // the algorithm
+  int n_col = xcube.n_cols; // flexibility
+  int n_row = xcube.n_rows; // time
+  int n_slice = xcube.n_slices; // object
+
+  for (int c=1; c < n_col; ++c) {
+    for (int s=0; s < n_slice ; ++s) {
+      for (int r=0; r < n_row; ++r) {
+
+        // if there is nothing to distribute, go directly to the next iteration
+        if (xcube(r, c, s) == 0) continue;
+        // at the last rows(time), the flexible is not considered
+        if ( r+1 >= n_row - c) break;
+
+        // divide to distribute in chunks of the indicated size
+        NumericVector chunks = divideInChunks(xcube(r,c,s), mtx_cmean(c,s));
+
+        for (int i=0; i < chunks.size(); ++i) {
+
+          // Recalculate the local fit curve in its environment
+          env_current = envCurrent(env_fit, env_current, r, c);
+          NumericVector ifit = Rf_eval(call, env_current);
+
+          // works with cap
+          if (cap > 0) {
+            // check current flexibility allocated
+            NumericVector iflex = sliceCurrent(fdemand,r,c);
+
+            // disallow (convert to NA) the values higher than the cap
+            if (is_true(any(iflex < cap))) {
+              for (int k=0; k < iflex.size(); ++k) {
+                if (iflex[k] >= cap) ifit[k] = NA_REAL;
+              }
+            }
+            // DEPLOY THE WATCH
+            // slide to the future if it is not possible to allocate any chunk
+            if (is_true(all(iflex >= cap)) & (cap_spread == true)) {
+              xcube(r+1,c,s) = xcube(i+1,c,s) +
+                sum(chunks.import(chunks.begin()+i, chunks.end()));
+              // update the proportion cube
+              arma::mat mtx_cssumn = sum(xcube, 2);
+              arma::cube pcube = xcube.each_slice() / mtx_cssumn;
+              break;
+            }
           }
-        }
-        // Find the spot where to put the chunk
-        int imin = tell_min(ifit);
 
-        // slide forward if necessary
-        if (is_true(all(iflex >= cap)) & (cap > 0) & (cap_spread == true)) {
-          // if all is over the cap, send the leftover chunks to the future
-          mtx(i+1,e) = mtx(i+1,e) + sum(chunks.import(chunks.begin()+j, chunks.end()));
-          break;
+          // Where to put the chunk
+          int imin = whichMin(ifit);
+
+          // the chunk may be distributed over several objects in fcube
+          fcube.tube(r+imin, c) = fcube.tube(r+imin, c) + (chunks[i] * pcube.tube(r,c));
+          //fcube(r+imin,c,s) = fcube(r+imin,c,s) + chunks[i]; // the previous alternative
+
+          // and to the total of flex consumption
+          cdemand(r+imin) = cdemand(r+imin) + chunks[i];
+          fdemand(r+imin) = fdemand(r+imin) + chunks[i];
+          // the demand in env_fit is updated with the just allocated one
+          env_fit[".demand"] = cdemand;
         }
-        // Add the chunk to the right place of the matrix,
-        // and to the total of flex consumption
-        flex_mtx(i+imin, e) = flex_mtx(i+imin, e) + chunks[j];
-        flex_vct(i+imin) = flex_vct(i+imin) + chunks[j];
       }
     }
-
   }
+  //calculate the final curve
+  NumericVector fit_curve_final = Rf_eval(call, env_fit);
 
-  if (is<DatetimeVector>(xts_index(matrix))) {
-    DatetimeVector time_index = xts_index(matrix);
-    flex_mtx.attr("index") = time_index;
-    flex_mtx.attr("class") = CharacterVector::create("xts", "zoo");
-  }
+  // unstack fcube in a list
+  List flist = cubeToList(fcube);
 
-  return flex_mtx;
+  List sol = List::create(_["demand_fixed"]= zdemand,
+                           _["demand_flex"]= flist,
+                           _["fit_curve_initial"]= fit_curve_initial,
+                           _["fit_curve_final"] = fit_curve_final);
+
+  return sol;
 }

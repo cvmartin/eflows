@@ -44,35 +44,40 @@ backshift <- function(matrix, price, horizon, depreciation, cap, size) {
     .Call('_eflows_backshift', PACKAGE = 'eflows', matrix, price, horizon, depreciation, cap, size)
 }
 
-#' Shift energy consumption towards the future.
-#'
-#' In function of a fitting curve and the flexibility time, the consumption of
-#' energy is delayed.
-#' @param matrix Numeric matrix, each row an observation in time (it can be a time series)
-#' and each column representing the flexibility of demand, increasing towards the right.
-#' @param flex_step Integer vector of same length of the column of `matrix`, indicating
-#' the number of timesteps the demand can be delayed. Normally, the first integer is `0`,
-#' indicating the `solid` demand.
-#' @param cap If higher than 0, indicates the maximum capacity of flexible demand
-#' that can be allocated in a timestep.
-#' @param cap_spread Boolean. if true, the cap is never exceeded, and instead the
-#' consumption is displaced towards the future, and resolved as soon as possible.
-#' @param foresee Boolean. If false, it indicates a complete lack of knowledge of the
-#' future flexible demand in the timeline.
-#' @param solar If present, the fitting curve is calculated substracting solar
-#' from the demand.
-#'
-#' @return A matrix, or an xts object if the index provided are a POSIXct object.
-#' @export
-foreshift <- function(matrix, flex_step, cap = 0, cap_spread = TRUE, foresee = TRUE, solar = as.numeric( c(0))) {
-    .Call('_eflows_foreshift', PACKAGE = 'eflows', matrix, flex_step, cap, cap_spread, foresee, solar)
-<<<<<<< HEAD
-=======
+formatFlexSteps <- function(matrix, flex_step, max_step = -1L) {
+    .Call('_eflows_formatFlexSteps', PACKAGE = 'eflows', matrix, flex_step, max_step)
+}
+
+divideInChunks <- function(x, precision) {
+    .Call('_eflows_divideInChunks', PACKAGE = 'eflows', x, precision)
+}
+
+whichMin <- function(x) {
+    .Call('_eflows_whichMin', PACKAGE = 'eflows', x)
+}
+
+sliceCurrent <- function(vec, start, end) {
+    .Call('_eflows_sliceCurrent', PACKAGE = 'eflows', vec, start, end)
+}
+
+envCurrent <- function(input, out, start, span) {
+    .Call('_eflows_envCurrent', PACKAGE = 'eflows', input, out, start, span)
+}
+
+listToCube <- function(mtx_list) {
+    .Call('_eflows_listToCube', PACKAGE = 'eflows', mtx_list)
+}
+
+cubeToList <- function(xcube) {
+    .Call('_eflows_cubeToList', PACKAGE = 'eflows', xcube)
+}
+
+foreShiftCpp <- function(mtx_list, env_fit, call, env_current, def_demand, cap = 0, cap_spread = TRUE) {
+    .Call('_eflows_foreShiftCpp', PACKAGE = 'eflows', mtx_list, env_fit, call, env_current, def_demand, cap, cap_spread)
 }
 
 model_c <- function(df, df_battery, initial_soc, to_battery_eff, from_battery_eff, to_ev_eff, from_ev_eff, max_battery_rate, ev_priority_charge = 0.5, ev_priority_discharge = 0.5, grid_capacity = 10, use_grid_cap = TRUE, use_v2g = TRUE, charge_thold = 0.7, v2g_thold = 0.9, pref_charge_stationary = 0.5, pref_discharge_stationary = 0.5, pref_charge_ev = 0.5, pref_discharge_ev = 0.5) {
     .Call('_eflows_model_c', PACKAGE = 'eflows', df, df_battery, initial_soc, to_battery_eff, from_battery_eff, to_ev_eff, from_ev_eff, max_battery_rate, ev_priority_charge, ev_priority_discharge, grid_capacity, use_grid_cap, use_v2g, charge_thold, v2g_thold, pref_charge_stationary, pref_discharge_stationary, pref_charge_ev, pref_discharge_ev)
->>>>>>> ad563bb87f54176b5e4a6b8ed81b821bc58af4a2
 }
 
 divide <- function(x, precision = 0.01) {
