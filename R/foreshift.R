@@ -6,7 +6,6 @@
 #' @param fit formula to calulate the fit of the flexible demand
 #'
 #' @return
-#' @export
 #'
 #' @examples
 foreshift <- function(input_mtx,

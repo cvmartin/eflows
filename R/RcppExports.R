@@ -18,7 +18,8 @@
 #'
 #' @return An object containing the state of charge of each battery, its final
 #' energy flow, and a double containing the energy that was not shared
-#' @export
+NULL
+
 allocate <- function(flow, soc, vol, share = as.numeric( c(1)), level = as.numeric( c(1)), active = as.logical( c(1)), eff = as.numeric( c(1)), cap = as.numeric( c(0))) {
     .Call('_eflows_allocate', PACKAGE = 'eflows', flow, soc, vol, share, level, active, eff, cap)
 }
@@ -35,11 +36,6 @@ seq_depreciated <- function(length, depreciation) {
     .Call('_eflows_seq_depreciated', PACKAGE = 'eflows', length, depreciation)
 }
 
-#' Shift energy consumption towards the past.
-#'
-#'
-#' @return A matrix, or an xts object if the index provided are a POSIXct object.
-#' @export
 backshift <- function(matrix, price, horizon, depreciation, cap, size) {
     .Call('_eflows_backshift', PACKAGE = 'eflows', matrix, price, horizon, depreciation, cap, size)
 }

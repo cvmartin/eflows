@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include"../inst/include/myheader.hpp"
+#include"../inst/include/eflowsheader.hpp"
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -36,11 +36,6 @@ NumericVector seq_depreciated(int length,
   return deprec;
 }
 
-//' Shift energy consumption towards the past.
-//'
-//'
-//' @return A matrix, or an xts object if the index provided are a POSIXct object.
-//' @export
 // [[Rcpp::export]]
 NumericMatrix backshift (NumericMatrix matrix,
                              NumericVector price,

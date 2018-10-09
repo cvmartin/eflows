@@ -15,6 +15,9 @@ foreshift(input_mtx, flex_step, input_vct, fit = ~1 * .demand)
 
 \item{fit}{formula to calulate the fit of the flexible demand}
 }
+\value{
+
+}
 \description{
 Shift demand to the future
 }

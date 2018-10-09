@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include"../inst/include/myheader.hpp"
+#include"../inst/include/eflowsheader.hpp"
 using namespace Rcpp;
 // [[Rcpp::plugins("cpp11")]]
 
@@ -20,7 +20,7 @@ using namespace Rcpp;
 //'
 //' @return An object containing the state of charge of each battery, its final
 //' energy flow, and a double containing the energy that was not shared
-//' @export
+
 // [[Rcpp::export]]
 List allocate (double flow,
                NumericVector soc,

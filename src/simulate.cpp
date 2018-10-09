@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include"../inst/include/myheader.hpp"
+#include"../inst/include/eflowsheader.hpp"
 using namespace Rcpp;
 
 // [[Rcpp::plugins("cpp11")]]

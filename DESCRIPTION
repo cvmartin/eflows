@@ -15,10 +15,7 @@ License: GPL-3 + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 2.10)
 LazyData: true
-Imports: zoo, 
-    xts,
-    magrittr,
-    Rcpp, 
+Imports: Rcpp, 
     RcppArmadillo, 
     R6
 RoxygenNote: 6.0.1
