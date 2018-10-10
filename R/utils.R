@@ -1,5 +1,6 @@
 #' @import Rcpp
 #' @import RcppArmadillo
+#' @import R6
 #' @useDynLib eflows
 #' 
 
