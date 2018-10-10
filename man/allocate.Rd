@@ -4,7 +4,8 @@
 \alias{allocate}
 \title{Allocate energy flows to batteries.}
 \usage{
-allocate(flow, soc, vol, share, level, active, eff, cap)
+allocate(flow, soc, vol, share = 1, level = 1, active = 1, eff = 1,
+  cap = 0)
 }
 \arguments{
 \item{flow}{Energy flow to be exchanged in the following time step. 
@@ -29,4 +30,7 @@ An object containing the state of charge of each battery
 }
 \description{
 Given a number of factors, the function returns the
+}
+\examples{
+1+1
 }

@@ -2,3 +2,6 @@
 
 export(allocate)
 export(foreshift)
+import(Rcpp)
+import(RcppArmadillo)
+useDynLib(eflows)

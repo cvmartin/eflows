@@ -19,7 +19,6 @@
 #' @examples
 #' 1+1
 allocate <- function(flow, soc, vol, share = 1, level = 1, active = 1, eff = 1, cap = 0) {
-  
-  allocateCpp(flow, soc, vol, share, level, active, eff, cap)
-  
+
+  .Call('_eflows_allocateCpp', PACKAGE = 'eflows', flow, soc, vol, share, level, active, eff, cap)
 }
