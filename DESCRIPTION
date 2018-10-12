@@ -1,12 +1,30 @@
 Package: eflows
 Type: Package
-Title: PLACEHOLDER FOR THE GOOD DESCRIPTION.
-Version: 1.0
+Title: Data-driven energy transition
+Version: 0.1.2.9000
 Date: 2018-10-09
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
-Imports: Rcpp (>= 0.12.19)
-LinkingTo: Rcpp, RcppArmadillo
+Author: person("Carlos", "Varela Martin", email = "cvarelamail@gmail.com",
+    role = c("aut", "cre"))
+Maintainer: Carlos Varela Martin <cvarelamail@gmail.com>
+Description: A toolbox for predicting the energy flows between
+    the different elements of an energy system, 
+    including renewable energies, stationary batteries and 
+    electric vehicles. The same functions involved in the 
+    simulation can be reused to do real-time steering of 
+    the energy system.
+License: GPL-3 + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 2.10)
+LazyData: true
+Imports: Rcpp (>= 0.12.19), 
+    RcppArmadillo, 
+    R6
 RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown,
+    testthat, 
+    covr
+VignetteBuilder: knitr
+LinkingTo: Rcpp, RcppArmadillo
+URL: https://github.com/cvmartin/eflows
+BugReports: https://github.com/cvmartin/eflows/issues
