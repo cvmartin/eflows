@@ -4,7 +4,7 @@
 #' @export
 #' @format An \code{\link{R6Class}} generator object
 #' @keywords data
-#' @field serveraddress Stores address of your lightning server.
+#' @field serveraddress Stores address of your lightning server
 #' @field sessionid Stores id of your current session on the server.
 #' @field url Stores url of the last visualization created by this object.
 #' @field autoopen Checks if the server is automatically opening the visualizations.
@@ -47,9 +47,6 @@ e_frame <- R6Class("e_demand",
                         self$demand$do_foreshift(...)
                         return(invisible(self))
                       }
-                        
-                        
-                      
                     )
 )
 

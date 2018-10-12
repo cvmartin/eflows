@@ -128,10 +128,9 @@ List foreShiftCpp(List mtx_list,
                   double cap = 0,
                   bool cap_spread = true
 ){
+  
   // define initial curve
   NumericVector fit_curve_initial = Rf_eval(call, env_fit);
-  
-  //
   
   // define initial demand from the argument passed from above
   NumericVector cdemand = Rf_eval(def_demand, env_fit);
@@ -157,19 +156,23 @@ List foreShiftCpp(List mtx_list,
   int n_col = xcube.n_cols; // flexibility
   int n_row = xcube.n_rows; // time
   int n_slice = xcube.n_slices; // object
-  
+
   for (int c=1; c < n_col; ++c) {
     for (int s=0; s < n_slice ; ++s) {
       for (int r=0; r < n_row; ++r) {
         
         // if there is nothing to distribute, go directly to the next iteration
         if (xcube(r, c, s) == 0) continue;
+
         // at the last rows(time), the flexible is not considered
         if ( r+1 >= n_row - c) break;
         
         // divide to distribute in chunks of the indicated size
-        NumericVector chunks = divideInChunks(xcube(r,c,s), mtx_cmean(c,s));
-        
+        double m = 0;
+        //selecting the mean is different if there is only one slice
+        if (n_slice == 1) m = mtx_cmean(s,c); else  m = mtx_cmean(c,s);
+        NumericVector chunks = divideInChunks(xcube(r,c,s), m);
+
         for (int i=0; i < chunks.size(); ++i) {
           
           // Recalculate the local fit curve in its environment
@@ -187,6 +190,7 @@ List foreShiftCpp(List mtx_list,
                 if (iflex[k] >= cap) ifit[k] = NA_REAL;
               }
             }
+
             // DEPLOY THE WATCH
             // slide to the future if it is not possible to allocate any chunk
             if (is_true(all(iflex >= cap)) & (cap_spread == true)) {
@@ -198,14 +202,14 @@ List foreShiftCpp(List mtx_list,
               break;
             }
           }
-          
+
           // Where to put the chunk
           int imin = whichMin(ifit);
           
           // the chunk may be distributed over several objects in fcube
           fcube.tube(r+imin, c) = fcube.tube(r+imin, c) + (chunks[i] * pcube.tube(r,c));
           //fcube(r+imin,c,s) = fcube(r+imin,c,s) + chunks[i]; // the previous alternative
-          
+
           // and to the total of flex consumption
           cdemand(r+imin) = cdemand(r+imin) + chunks[i];
           fdemand(r+imin) = fdemand(r+imin) + chunks[i];
@@ -215,6 +219,7 @@ List foreShiftCpp(List mtx_list,
       }
     }
   }
+
   //calculate the final curve
   NumericVector fit_curve_final = Rf_eval(call, env_fit);
   

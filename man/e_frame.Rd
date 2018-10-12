@@ -14,7 +14,7 @@ Define an e_frame object
 \section{Fields}{
 
 \describe{
-\item{\code{serveraddress}}{Stores address of your lightning server.}
+\item{\code{serveraddress}}{Stores address of your lightning server}
 
 \item{\code{sessionid}}{Stores id of your current session on the server.}
 
