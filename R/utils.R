@@ -2,8 +2,15 @@
 #' @import RcppArmadillo
 #' @import R6
 #' @useDynLib eflows
+#' @importFrom stats as.formula
 #' 
 
+
+# time --------------------------------------------------------------------
+freq_hour <- function(vec) {
+  sec_interval <- mean(diff(as.integer(vec)))
+  sec_interval / 3600
+}
 
 # power - energy ----------------------------------------------------------
 kw_to_kwh <- function(df) {
