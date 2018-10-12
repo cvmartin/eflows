@@ -99,7 +99,8 @@ foreshift <- function(input_mtx,
   aux_env = new.env()
 
   expr_aux_demand <- aux_demand[[2]]
-
+  
+  
   sol <- foreShiftCpp(mtx_list,
                       env_fit,
                       expr_fit,
@@ -108,9 +109,9 @@ foreshift <- function(input_mtx,
 
   sol
 
-  # list(demand_fixed = sol$demand_fixed,
-  #      demand_flex = sol$demand_flex,
-  #      fit_curve_initial = sol$fit_curve_initial,
-  #      fit_curve_final = sol$fit_curve_final)
-
-}
+  # list(mtx_list,
+  #      env_fit,
+  #      expr_fit,
+  #      aux_env,
+  #      expr_aux_demand)
+  }

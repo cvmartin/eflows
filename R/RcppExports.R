@@ -37,19 +37,3 @@ foreShiftCpp <- function(mtx_list, env_fit, call, env_current, def_demand, cap =
     .Call('_eflows_foreShiftCpp', PACKAGE = 'eflows', mtx_list, env_fit, call, env_current, def_demand, cap, cap_spread)
 }
 
-rcpparma_hello_world <- function() {
-    .Call('_eflows_rcpparma_hello_world', PACKAGE = 'eflows')
-}
-
-rcpparma_outerproduct <- function(x) {
-    .Call('_eflows_rcpparma_outerproduct', PACKAGE = 'eflows', x)
-}
-
-rcpparma_innerproduct <- function(x) {
-    .Call('_eflows_rcpparma_innerproduct', PACKAGE = 'eflows', x)
-}
-
-rcpparma_bothproducts <- function(x) {
-    .Call('_eflows_rcpparma_bothproducts', PACKAGE = 'eflows', x)
-}
-

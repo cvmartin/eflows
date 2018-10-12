@@ -1,4 +1,4 @@
-#' An example R6 class
+#' R6 class for the e_frame
 #' 
 #' @docType class
 #' @export
@@ -55,7 +55,7 @@ e_demand <- R6Class("e_demand",
 )
 
 
-#' Another example of an R6 class
+#' Class to generate a flexibilty matrix
 #' 
 #' @docType class
 #' @export

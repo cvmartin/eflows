@@ -2,6 +2,7 @@
 
 export(allocate)
 export(e_demand)
+export(e_frame)
 export(flex_mtx)
 export(foreshift)
 import(R6)
