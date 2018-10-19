@@ -8,6 +8,7 @@
 \describe{
   \item{datetime}{time series}
   \item{d_household}{Demand of one household (kWh)}
+  \item{d_house_smooth}{Demand of one household (kWh), smoothed following publicly available data from Liander}
   \item{d_beng}{Demand of ventilation and hot water for one household(kWh)}
   \item{d_beng_heat}{Demand of heat, ventilation and hot water for one household(kWh). This data is original from the month of November instead}
   \item{d_ev}{Average demand of one electric vehicle(kWh)}

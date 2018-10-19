@@ -17,24 +17,26 @@
 #'   \item{\code{createsession(sessionname = "")}}{This method creates new session on the server with optionally given name in \code{sessionname}.}
 #'   \item{\code{usesession(sessionid)}}{This method changes currently used session on the server to the one with id given in \code{sessionid} parameter.}
 #' }
-e_frame <- R6Class("e_demand",
+e_frame <- R6Class("e_frame",
                     public = list(
-                      time = list(series = NULL, 
-                                  step = NULL), 
+                      setup = list(time = list(series = NULL, 
+                                               step = NULL), 
+                                   units = list(energy = NULL)),
                       production = NULL, 
                       demand = NULL, 
                       storage = NULL, 
                       infrastructure = NULL,
                       
-                      initialize = function(timeseries) {
+                      initialize = function(timeseries, unit = "kWh") {
+                        self$setup$units$energy <- unit
                         l <- length(timeseries)
                         if (is.null(freq_seconds(timeseries))) {
                           warning(sprintf("'time$series' set as a vector (1:%s)", l))
-                          self$time$series <- seq(1:l)
+                          self$setup$time$series <- seq(1:l)
                           return(invisible(self))
                         }
-                        self$time$series <- timeseries
-                        self$time$step <- freq_seconds(timeseries)
+                        self$setup$time$series <- timeseries
+                        self$setuo$time$step <- freq_seconds(timeseries)
                         return(invisible(self))
                       },
                       

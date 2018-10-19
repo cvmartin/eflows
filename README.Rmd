@@ -22,4 +22,4 @@ In addition, the same functions involved in the simulation can be reused to do r
 ## Installation
 
 ```{r, eval = FALSE}
-devtools::install_github("cvmartin/eflows", build_vignettes = TRUE)
+devtools::install_github("cvmartin/eflows")

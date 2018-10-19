@@ -70,8 +70,7 @@ foreshift <- function(input_mtx,
   if (!(".cap_demand" %in% names(input_vct))) {
     input_vct[[".cap_demand"]] <- rep(0, nrow(mtx_list[[1]]))
   }
-
-
+  
   # the list input_vct is instead an environment
   env_fit <- list2env(input_vct)
   ## input verification
@@ -107,11 +106,6 @@ foreshift <- function(input_mtx,
                       aux_env,
                       expr_aux_demand)
 
-  sol
-
-  # list(mtx_list,
-  #      env_fit,
-  #      expr_fit,
-  #      aux_env,
-  #      expr_aux_demand)
+  list(fixed = sol$demand_fixed, 
+       flex = sol$demand_flex)
   }

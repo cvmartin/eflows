@@ -47,7 +47,7 @@ e_demand <- R6Class("e_demand",
                                     flex_step = list_steps,
                                     fit
                           )
-                        names(fshifted$demand_flex) <- list_name
+                        names(fshifted$flex) <- list_name
                         self$output <- fshifted
                         return(invisible(self))
                       }
