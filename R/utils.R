@@ -12,8 +12,11 @@ listify <- function(input) {
   list(input)
 }
 
-# time --------------------------------------------------------------------
+`%||%` <- function (x, y){
+  if (is.null(x)) y else x
+}
 
+# time --------------------------------------------------------------------
 is_POSIXt <- function(x) inherits(x, "POSIXt")
 is_date <- function(x) inherits(x, "Date")
 

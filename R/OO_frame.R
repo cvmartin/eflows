@@ -19,13 +19,23 @@
 #' }
 e_frame <- R6Class("e_frame",
                     public = list(
+                      
                       setup = list(time = list(series = NULL, 
                                                step = NULL), 
-                                   units = list(energy = NULL)),
+                                   units = list(energy = NULL, 
+                                                price = NULL)),
                       production = NULL, 
                       demand = NULL, 
                       storage = NULL, 
                       infrastructure = NULL,
+                      utility = list(
+                        input = list(
+                          fit = list(curve = NULL), 
+                          price = NULL), 
+                        output = list(
+                          fit = list(curve = NULL)
+                          )
+                        ),
                       
                       initialize = function(timeseries, unit = "kWh") {
                         self$setup$units$energy <- unit
@@ -36,17 +46,52 @@ e_frame <- R6Class("e_frame",
                           return(invisible(self))
                         }
                         self$setup$time$series <- timeseries
-                        self$setuo$time$step <- freq_seconds(timeseries)
+                        self$setup$time$step <- freq_seconds(timeseries)
                         return(invisible(self))
                       },
-                      
+# set ---------------------------------------------------------------------
                       set_demand = function(obj){
                         self$demand <- obj
                         return(invisible(self))
                       },
-                      
-                      do_foreshift = function(...){
-                        self$demand$do_foreshift(...)
+                      set_production = function(obj){
+                        self$production <- obj
+                        return(invisible(self))
+                      },
+                      set_price = function(vector, unit){
+                        self$utility$input$price <- vector
+                        self$setup$units$price <- unit
+                        return(invisible(self))
+                      },
+# do ----------------------------------------------------------------------
+                      do_foreshift = function(add_input_vct = NULL, fit = ~ 1*.demand){
+                        
+                        list_data <- lapply(self$demand$input$flex, function(x){x[["data"]]})
+                        list_steps <- lapply(self$demand$input$flex, function(x){x[["steps"]]})
+                        list_name <- lapply(self$demand$input$flex, function(x){x[["name"]]})
+                        
+                        init_input_vct <- list(.demand_fixed = self$demand$input$fixed %||% NULL, 
+                                               .production_fixed = self$production$sum_fixed %||% NULL, 
+                                               .price = self$utility$input$price %||% NULL)
+                        
+                        clean_input_vct <-  Filter(Negate((is.null)), init_input_vct)
+                        total_input_vct <- c(clean_input_vct, add_input_vct)
+                        
+                        # if (all(all.vars(fit)) %in% names(total_input_vct)) # Raise error
+                        
+                        fshifted <- foreshift(
+                          input_mtx = list_data,
+                          input_vct = total_input_vct,
+                          flex_step = list_steps,
+                          fit = fit
+                          )
+                        names(fshifted$demand_flex) <- list_name
+                        
+                        self$demand$output$fixed <- fshifted$demand_fixed
+                        self$demand$output$flex <- fshifted$demand_flex
+                        self$utility$input$fit$curve <- fshifted$fit_curve_initial
+                        self$utility$output$fit$curve <- fshifted$fit_curve_final
+                        
                         return(invisible(self))
                       }
                     )

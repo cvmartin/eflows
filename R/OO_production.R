@@ -1,4 +1,4 @@
-#' R6 class for the e_demand
+#' R6 class for the e_production
 #' 
 #' @docType class
 #' @export
@@ -17,48 +17,20 @@
 #'   \item{\code{createsession(sessionname = "")}}{This method creates new session on the server with optionally given name in \code{sessionname}.}
 #'   \item{\code{usesession(sessionid)}}{This method changes currently used session on the server to the one with id given in \code{sessionid} parameter.}
 #' }
-e_demand <- R6Class("e_demand",
+e_production <- R6Class("e_production",
                     public = list(
                       input = list(fixed = NULL,
                                    flex = NULL),
                       output = NULL,
-                      initialize = function(fixed = c(),
+                      initialize = function(fixed = NULL,
                                             flex = NULL) {
-                        # if(inherits(flex, "flex_mtx") == FALSE) stop("flexible demand can only be 'flex_mtx' objects")
-                    
-                        self$input$fixed <- fixed
+                        self$input$fixed <- listify(fixed)
                         self$input$flex <- listify(flex)
                       }
-                      
-                    )
-)
-
-
-#' Class to generate a flexibilty matrix
-#' 
-#' @docType class
-#' @export
-#' @format An \code{\link{R6Class}} generator object
-#' @keywords data
-#' @section Methods:
-#' \describe{
-#'   \item{\code{example_method(parameter_1 = 3)}}{This method uses \code{parameter_1} to ...}
-#' }
-flex_mtx <- R6Class("flex_mtx",
-                    public = list(
-                      name = NULL,
-                      data = NULL,
-                      steps = NULL,
-                      initialize = function(data = matrix(),
-                                            steps = c(),
-                                            name = NULL) {
-                        
-                        # if(length(steps) != ncol(data)) stop("steps and columns in data do not match")
-                        
-                        self$name <- name
-                        self$data <- data
-                        self$steps <- steps
+                    ), 
+                    active = list(
+                      sum_fixed = function(){
+                        Reduce(`+`, self$input$fixed)
                       }
                     )
 )
-

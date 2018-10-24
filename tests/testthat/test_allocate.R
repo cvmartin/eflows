@@ -1,8 +1,6 @@
 library(eflows)
 context("work of allocate()")
 
-
-
 test_that("efficiency", {
   expect_equal(allocate(100, c(25,50), c(70, 70), eff = c(0.8,0.8))[[3]],
                18.75)

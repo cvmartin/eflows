@@ -105,7 +105,6 @@ foreshift <- function(input_mtx,
                       expr_fit,
                       aux_env,
                       expr_aux_demand)
-
-  list(fixed = sol$demand_fixed, 
-       flex = sol$demand_flex)
+  
+  sol
   }
