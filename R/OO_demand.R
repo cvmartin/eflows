@@ -23,11 +23,12 @@ e_demand <- R6Class("e_demand",
                                    flex = NULL),
                       output = NULL,
                       initialize = function(fixed = c(),
-                                            flex = NULL) {
-                        # if(inherits(flex, "flex_mtx") == FALSE) stop("flexible demand can only be 'flex_mtx' objects")
-                    
+                                            flex = list()) {
+                        flex <- listify(flex)
+                        assert_that(all_flex_mtx(flex))
+
                         self$input$fixed <- fixed
-                        self$input$flex <- listify(flex)
+                        self$input$flex <- flex
                       }
                       
                     )
@@ -52,8 +53,7 @@ flex_mtx <- R6Class("flex_mtx",
                       initialize = function(data = matrix(),
                                             steps = c(),
                                             name = NULL) {
-                        
-                        # if(length(steps) != ncol(data)) stop("steps and columns in data do not match")
+                        assert_that(ncol(data) == length(steps))
                         
                         self$name <- name
                         self$data <- data

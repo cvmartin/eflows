@@ -1,6 +1,7 @@
 #' @import Rcpp
 #' @import RcppArmadillo
 #' @import R6
+#' @import assertthat
 #' @useDynLib eflows
 #' @importFrom stats as.formula
 #' 
@@ -29,21 +30,19 @@ freq_seconds <- function(vec) {
   mean(diff(as.integer(vec)))
 }
 
-# power - energy ----------------------------------------------------------
-# kw_to_kwh <- function(df) {
-#   stopifnot(inherits(df[[1]], "POSIXt"))
-#   f <- freq_seconds(df[[1]])
-#   cbind(
-#     df[1],
-#     apply(df[2:length(df)], 2, function(x){x * f})
-#   )
-# }
-# 
-# kwh_to_kw <- function(df) {
-#   stopifnot(inherits(df[[1]], "POSIXt"))
-#   f <- freq_seconds(df[[1]])
-#   cbind(
-#     df[1],
-#     apply(df[2:length(df)], 2, function(x){x / f})
-#   )
-# }
+
+# safe environment --------------------------------------------------------
+
+safe_f <- c(
+  getGroupMembers("Math"),
+  getGroupMembers("Arith"),
+  getGroupMembers("Compare"),
+  getGroupMembers("Logic"),
+  "<-", "{", "(", "ifelse"
+)
+
+safe_env <- new.env(parent = emptyenv())
+
+for (f in safe_f) {
+  safe_env[[f]] <- get(f, "package:base")
+}

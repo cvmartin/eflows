@@ -51,10 +51,12 @@ e_frame <- R6Class("e_frame",
                       },
 # set ---------------------------------------------------------------------
                       set_demand = function(obj){
+                        assert_that(inherits(obj, "e_demand"))
                         self$demand <- obj
                         return(invisible(self))
                       },
                       set_production = function(obj){
+                        assert_that(inherits(obj, "e_production"))
                         self$production <- obj
                         return(invisible(self))
                       },

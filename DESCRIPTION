@@ -1,7 +1,7 @@
 Package: eflows
 Type: Package
 Title: Data-driven energy transition
-Version: 0.1.2.9000
+Version: 0.1.3.9000
 Date: 2018-16-10
 Author: person("Carlos", "Varela Martin", email = "cvarelamail@gmail.com",
     role = c("aut", "cre"))
@@ -22,6 +22,7 @@ Imports: Rcpp (>= 0.12.19),
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown,
+    assertthat,
     testthat, 
     covr
 VignetteBuilder: knitr

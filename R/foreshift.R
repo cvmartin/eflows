@@ -72,7 +72,7 @@ foreshift <- function(input_mtx,
   }
   
   # the list input_vct is instead an environment
-  env_fit <- list2env(input_vct)
+  env_fit <- list2env(input_vct, parent = safe_env)
   ## input verification
   # stopifnot(
   #   # not all the variables for the fit formula are passed
@@ -95,7 +95,7 @@ foreshift <- function(input_mtx,
 
   aux_demand <- ~ 1*.demand
 
-  aux_env = new.env()
+  aux_env = new.env(parent = safe_env)
 
   expr_aux_demand <- aux_demand[[2]]
   
