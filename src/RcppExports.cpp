@@ -6,9 +6,9 @@
 
 using namespace Rcpp;
 
-// allocateCpp
-List allocateCpp(double flow, NumericVector soc, NumericVector vol, NumericVector share, NumericVector level, LogicalVector active, NumericVector eff, NumericVector cap);
-RcppExport SEXP _eflows_allocateCpp(SEXP flowSEXP, SEXP socSEXP, SEXP volSEXP, SEXP shareSEXP, SEXP levelSEXP, SEXP activeSEXP, SEXP effSEXP, SEXP capSEXP) {
+// distributeCpp
+List distributeCpp(double flow, NumericVector soc, NumericVector vol, NumericVector share, NumericVector level, LogicalVector active, NumericVector eff, NumericVector cap);
+RcppExport SEXP _eflows_distributeCpp(SEXP flowSEXP, SEXP socSEXP, SEXP volSEXP, SEXP shareSEXP, SEXP levelSEXP, SEXP activeSEXP, SEXP effSEXP, SEXP capSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< LogicalVector >::type active(activeSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type eff(effSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type cap(capSEXP);
-    rcpp_result_gen = Rcpp::wrap(allocateCpp(flow, soc, vol, share, level, active, eff, cap));
+    rcpp_result_gen = Rcpp::wrap(distributeCpp(flow, soc, vol, share, level, active, eff, cap));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -110,25 +110,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // foreShiftCpp
-List foreShiftCpp(List mtx_list, Environment env_fit, Language call, Environment env_current, Language def_demand, double cap, bool cap_spread);
-RcppExport SEXP _eflows_foreShiftCpp(SEXP mtx_listSEXP, SEXP env_fitSEXP, SEXP callSEXP, SEXP env_currentSEXP, SEXP def_demandSEXP, SEXP capSEXP, SEXP cap_spreadSEXP) {
+List foreShiftCpp(List mtx_list, NumericVector cap, Environment env_fit, Language call_fit, Environment env_aux, Language call_aux);
+RcppExport SEXP _eflows_foreShiftCpp(SEXP mtx_listSEXP, SEXP capSEXP, SEXP env_fitSEXP, SEXP call_fitSEXP, SEXP env_auxSEXP, SEXP call_auxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type mtx_list(mtx_listSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type cap(capSEXP);
     Rcpp::traits::input_parameter< Environment >::type env_fit(env_fitSEXP);
-    Rcpp::traits::input_parameter< Language >::type call(callSEXP);
-    Rcpp::traits::input_parameter< Environment >::type env_current(env_currentSEXP);
-    Rcpp::traits::input_parameter< Language >::type def_demand(def_demandSEXP);
-    Rcpp::traits::input_parameter< double >::type cap(capSEXP);
-    Rcpp::traits::input_parameter< bool >::type cap_spread(cap_spreadSEXP);
-    rcpp_result_gen = Rcpp::wrap(foreShiftCpp(mtx_list, env_fit, call, env_current, def_demand, cap, cap_spread));
+    Rcpp::traits::input_parameter< Language >::type call_fit(call_fitSEXP);
+    Rcpp::traits::input_parameter< Environment >::type env_aux(env_auxSEXP);
+    Rcpp::traits::input_parameter< Language >::type call_aux(call_auxSEXP);
+    rcpp_result_gen = Rcpp::wrap(foreShiftCpp(mtx_list, cap, env_fit, call_fit, env_aux, call_aux));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_eflows_allocateCpp", (DL_FUNC) &_eflows_allocateCpp, 8},
+    {"_eflows_distributeCpp", (DL_FUNC) &_eflows_distributeCpp, 8},
     {"_eflows_formatFlexSteps", (DL_FUNC) &_eflows_formatFlexSteps, 3},
     {"_eflows_divideInChunks", (DL_FUNC) &_eflows_divideInChunks, 2},
     {"_eflows_whichMin", (DL_FUNC) &_eflows_whichMin, 1},
@@ -136,7 +135,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_eflows_envCurrent", (DL_FUNC) &_eflows_envCurrent, 4},
     {"_eflows_listToCube", (DL_FUNC) &_eflows_listToCube, 1},
     {"_eflows_cubeToList", (DL_FUNC) &_eflows_cubeToList, 1},
-    {"_eflows_foreShiftCpp", (DL_FUNC) &_eflows_foreShiftCpp, 7},
+    {"_eflows_foreShiftCpp", (DL_FUNC) &_eflows_foreShiftCpp, 6},
     {NULL, NULL, 0}
 };
 

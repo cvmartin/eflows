@@ -1,4 +1,4 @@
-#' Allocate energy flows to batteries.
+#' Distribute energy flows to batteries.
 #' 
 #' Given a number of factors, the function returns the
 #  demand and updated state of charge of the batteries.
@@ -18,8 +18,8 @@
 #'
 #' @examples
 #' 1+1
-allocate <- function(flow, soc, vol, share = 1, level = 1, active = 1, eff = 1, cap = 0) {
+distribute <- function(flow, soc, vol, share = 1, level = 1, active = 1, eff = 1, cap = 0) {
   
-  allocateCpp(flow, soc, vol, share, level, active, eff, cap)
+  distributeCpp(flow, soc, vol, share, level, active, eff, cap)
 
 }

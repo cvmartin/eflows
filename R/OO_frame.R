@@ -71,6 +71,7 @@ e_frame <- R6Class("e_frame",
                         list_data <- lapply(self$demand$input$flex, function(x){x[["data"]]})
                         list_steps <- lapply(self$demand$input$flex, function(x){x[["steps"]]})
                         list_name <- lapply(self$demand$input$flex, function(x){x[["name"]]})
+                        list_cap <- lapply(self$demand$input$flex, function(x){x[["cap"]]})
                         
                         init_input_vct <- list(.demand_fixed = self$demand$input$fixed %||% NULL, 
                                                .production_fixed = self$production$sum_fixed %||% NULL, 
@@ -83,6 +84,7 @@ e_frame <- R6Class("e_frame",
                         
                         fshifted <- foreshift(
                           input_mtx = list_data,
+                          cap = list_cap,
                           input_vct = total_input_vct,
                           flex_step = list_steps,
                           fit = fit

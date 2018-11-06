@@ -10,6 +10,7 @@
 #'
 #' @param input_mtx list of flexible matrices
 #' @param flex_step list of flexibility steps
+#' @param cap list of cap per object
 #' @param input_vct list of input vectorized
 #' @param fit formula to calulate the fit of the flexible demand
 #'
@@ -25,6 +26,7 @@
 #' 1+1
 foreshift <- function(input_mtx,
                        flex_step,
+                      cap,
                        input_vct,
                        fit = ~ 1*.demand
 ){
@@ -90,21 +92,19 @@ foreshift <- function(input_mtx,
   #   ncol(input_mtx) == length(flex_step)
   #   )
   ##
-
-  expr_fit <- fit[[2]]
-
-  aux_demand <- ~ 1*.demand
-
-  aux_env = new.env(parent = safe_env)
-
-  expr_aux_demand <- aux_demand[[2]]
   
+  # aux_demand <- ~ 1*.demand
+
+  call_fit <- fit[[2]]
+  env_aux = new.env(parent = safe_env)
+  call_aux <- (~ 1*.demand)[[2]]
   
-  sol <- foreShiftCpp(mtx_list,
-                      env_fit,
-                      expr_fit,
-                      aux_env,
-                      expr_aux_demand)
+  sol <- foreShiftCpp(mtx_list = mtx_list,
+                      cap = simplify2array(cap),
+                      env_fit = env_fit,
+                      call_fit = call_fit,
+                      env_aux = env_aux,
+                      call_aux = call_aux)
   
   sol
   }

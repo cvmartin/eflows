@@ -121,23 +121,25 @@ List cubeToList (arma::cube xcube){
 
 // [[Rcpp::export]]
 List foreShiftCpp(List mtx_list,
+                  NumericVector cap,
                   Environment env_fit,
-                  Language call,
-                  Environment env_current,
-                  Language def_demand,
-                  double cap = 0,
-                  bool cap_spread = true
+                  Language call_fit,
+                  Environment env_aux,
+                  Language call_aux
 ){
   
   // define initial curve
-  NumericVector fit_curve_initial = Rf_eval(call, env_fit);
+  NumericVector fit_curve_initial = Rf_eval(call_fit, env_fit);
   
   // define initial demand from the argument passed from above
-  NumericVector cdemand = Rf_eval(def_demand, env_fit);
+  NumericVector cdemand = Rf_eval(call_aux, env_fit);
   NumericVector zdemand = clone(cdemand);
   // and an empty vector for the flexible demand
-  NumericVector fdemand = clone(cdemand);
-  fdemand.fill(0);
+  // NumericVector fdemand = clone(cdemand);
+  // fdemand.fill(0);
+  // and an empty vector for the flexible demand of each object
+  NumericVector odemand = clone(cdemand);
+  odemand.fill(0);
   
   // build a cube with the input
   arma::cube xcube = listToCube(mtx_list);
@@ -159,6 +161,16 @@ List foreShiftCpp(List mtx_list,
 
   for (int c=1; c < n_col; ++c) {
     for (int s=0; s < n_slice ; ++s) {
+      
+      
+      //reboot the object demand
+      odemand.fill(0);
+      
+      //find the cap for this object
+      double icap = cap[s];
+      
+      
+      
       for (int r=0; r < n_row; ++r) {
         
         // if there is nothing to distribute, go directly to the next iteration
@@ -169,38 +181,44 @@ List foreShiftCpp(List mtx_list,
         
         // divide to distribute in chunks of the indicated size
         double m = 0;
+        
         //selecting the mean is different if there is only one slice
         if (n_slice == 1) m = mtx_cmean(s,c); else  m = mtx_cmean(c,s);
         NumericVector chunks = divideInChunks(xcube(r,c,s), m);
-
+        
         for (int i=0; i < chunks.size(); ++i) {
           
           // Recalculate the local fit curve in its environment
-          env_current = envCurrent(env_fit, env_current, r, c);
-          NumericVector ifit = Rf_eval(call, env_current);
+          env_aux = envCurrent(env_fit, env_aux, r, c);
+          NumericVector ifit = Rf_eval(call_fit, env_aux);
+          
+          
           
           // works with cap
-          if (cap > 0) {
+          if (icap > 0) {
             // check current flexibility allocated
-            NumericVector iflex = sliceCurrent(fdemand,r,c);
+            NumericVector iflex = sliceCurrent(odemand,r,c);
             
-            // disallow (convert to NA) the values higher than the cap
-            if (is_true(any(iflex < cap))) {
+            // Rcout << iflex;
+            
+            // disallow (convert to NA) the values higher than the cap of the object
+            if (is_true(any(iflex < icap))) {
               for (int k=0; k < iflex.size(); ++k) {
-                if (iflex[k] >= cap) ifit[k] = NA_REAL;
+                if (iflex[k] >= icap) ifit[k] = NA_REAL;
               }
             }
 
             // DEPLOY THE WATCH
+            
             // slide to the future if it is not possible to allocate any chunk
-            if (is_true(all(iflex >= cap)) & (cap_spread == true)) {
-              xcube(r+1,c,s) = xcube(i+1,c,s) +
-                sum(chunks.import(chunks.begin()+i, chunks.end()));
-              // update the proportion cube
-              arma::mat mtx_cssumn = sum(xcube, 2);
-              arma::cube pcube = xcube.each_slice() / mtx_cssumn;
-              break;
-            }
+            // if (is_true(all(iflex >= cap)) & (cap_spread == true)) {
+            //   xcube(r+1,c,s) = xcube(i+1,c,s) +
+            //     sum(chunks.import(chunks.begin()+i, chunks.end()));
+            //   // update the proportion cube
+            //   arma::mat mtx_cssumn = sum(xcube, 2);
+            //   arma::cube pcube = xcube.each_slice() / mtx_cssumn;
+            //   break;
+            // }
           }
 
           // Where to put the chunk
@@ -212,7 +230,8 @@ List foreShiftCpp(List mtx_list,
 
           // and to the total of flex consumption
           cdemand(r+imin) = cdemand(r+imin) + chunks[i];
-          fdemand(r+imin) = fdemand(r+imin) + chunks[i];
+          // fdemand(r+imin) = fdemand(r+imin) + chunks[i];
+          odemand(r+imin) = odemand(r+imin) + chunks[i];
           // the demand in env_fit is updated with the just allocated one
           env_fit[".demand"] = cdemand;
         }
@@ -221,7 +240,7 @@ List foreShiftCpp(List mtx_list,
   }
 
   //calculate the final curve
-  NumericVector fit_curve_final = Rf_eval(call, env_fit);
+  NumericVector fit_curve_final = Rf_eval(call_fit, env_fit);
   
   // unstack fcube in a list
   List flist = cubeToList(fcube);

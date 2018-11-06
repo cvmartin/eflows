@@ -4,7 +4,7 @@ using namespace Rcpp;
 // [[Rcpp::plugins("cpp11")]]
 
 // [[Rcpp::export]]
-List allocateCpp (double flow,
+List distributeCpp (double flow,
                   NumericVector soc,
                   NumericVector vol,
                   NumericVector share = NumericVector::create(1),

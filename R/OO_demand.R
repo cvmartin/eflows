@@ -50,14 +50,17 @@ flex_mtx <- R6Class("flex_mtx",
                       name = NULL,
                       data = NULL,
                       steps = NULL,
+                      cap = NULL,
                       initialize = function(data = matrix(),
                                             steps = c(),
-                                            name = NULL) {
+                                            name = NULL, 
+                                            cap = NULL) {
                         assert_that(ncol(data) == length(steps))
                         
                         self$name <- name
                         self$data <- data
                         self$steps <- steps
+                        self$cap <- cap
                       }
                     )
 )
