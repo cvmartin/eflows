@@ -110,18 +110,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // foreShiftCpp
-List foreShiftCpp(List mtx_list, NumericVector cap, Environment env_fit, Language call_fit, Environment env_aux, Language call_aux);
-RcppExport SEXP _eflows_foreShiftCpp(SEXP mtx_listSEXP, SEXP capSEXP, SEXP env_fitSEXP, SEXP call_fitSEXP, SEXP env_auxSEXP, SEXP call_auxSEXP) {
+List foreShiftCpp(List mtx_list, NumericVector cap_charge, Environment env_fit, Language call_fit, Environment env_aux, Language call_aux);
+RcppExport SEXP _eflows_foreShiftCpp(SEXP mtx_listSEXP, SEXP cap_chargeSEXP, SEXP env_fitSEXP, SEXP call_fitSEXP, SEXP env_auxSEXP, SEXP call_auxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type mtx_list(mtx_listSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type cap(capSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type cap_charge(cap_chargeSEXP);
     Rcpp::traits::input_parameter< Environment >::type env_fit(env_fitSEXP);
     Rcpp::traits::input_parameter< Language >::type call_fit(call_fitSEXP);
     Rcpp::traits::input_parameter< Environment >::type env_aux(env_auxSEXP);
     Rcpp::traits::input_parameter< Language >::type call_aux(call_auxSEXP);
-    rcpp_result_gen = Rcpp::wrap(foreShiftCpp(mtx_list, cap, env_fit, call_fit, env_aux, call_aux));
+    rcpp_result_gen = Rcpp::wrap(foreShiftCpp(mtx_list, cap_charge, env_fit, call_fit, env_aux, call_aux));
     return rcpp_result_gen;
 END_RCPP
 }

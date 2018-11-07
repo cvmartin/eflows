@@ -89,12 +89,26 @@ e_frame <- R6Class("e_frame",
                           flex_step = list_steps,
                           fit = fit
                           )
-                        names(fshifted$demand_flex) <- list_name
                         
                         self$demand$output$fixed <- fshifted$demand_fixed
-                        self$demand$output$flex <- fshifted$demand_flex
                         self$utility$input$fit$curve <- fshifted$fit_curve_initial
                         self$utility$output$fit$curve <- fshifted$fit_curve_final
+                        
+                        build_output_flex <- function(data, steps, name, cap){
+                          list(data = data,
+                               steps = steps, 
+                               name = name, 
+                               cap = cap)
+                        }
+                        
+                        self$demand$output$flex <- 
+                          mapply(build_output_flex, 
+                                 data = fshifted$demand_flex, 
+                                 steps = lapply(fshifted$demand_flex, function(x){1:ncol(x)}), 
+                                 name = list_name, 
+                                 cap = list_cap, 
+                                 SIMPLIFY = FALSE
+                          )
                         
                         return(invisible(self))
                       }

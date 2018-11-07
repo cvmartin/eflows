@@ -33,7 +33,7 @@ cubeToList <- function(xcube) {
     .Call('_eflows_cubeToList', PACKAGE = 'eflows', xcube)
 }
 
-foreShiftCpp <- function(mtx_list, cap, env_fit, call_fit, env_aux, call_aux) {
-    .Call('_eflows_foreShiftCpp', PACKAGE = 'eflows', mtx_list, cap, env_fit, call_fit, env_aux, call_aux)
+foreShiftCpp <- function(mtx_list, cap_charge, env_fit, call_fit, env_aux, call_aux) {
+    .Call('_eflows_foreShiftCpp', PACKAGE = 'eflows', mtx_list, cap_charge, env_fit, call_fit, env_aux, call_aux)
 }
 

@@ -99,8 +99,12 @@ foreshift <- function(input_mtx,
   env_aux = new.env(parent = safe_env)
   call_aux <- (~ 1*.demand)[[2]]
   
+  ## process cap: the NULL become zero
+  
+  cap_charge <- vapply(cap, function(x){ifelse(is.null(x), 0, x)}, numeric(1))
+  
   sol <- foreShiftCpp(mtx_list = mtx_list,
-                      cap = simplify2array(cap),
+                      cap_charge = cap_charge,
                       env_fit = env_fit,
                       call_fit = call_fit,
                       env_aux = env_aux,

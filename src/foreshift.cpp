@@ -42,6 +42,7 @@ NumericVector divideInChunks(float x, float precision){
 
 // [[Rcpp::export]]
 int whichMin (NumericVector x){
+  // return the minimum of a vector as long as it is finite (remove NA)
   int res = 0;
   LogicalVector finite = is_finite(x);
   for (int i=0; i < x.size(); ++i) {
@@ -92,6 +93,12 @@ NumericMatrix asNumericMatrix (arma::mat x) {
   return y ;
 }
 
+// [[Rcpp:: export]]
+NumericVector asNumericVector (arma::vec x) {
+  NumericVector y = wrap(x) ;
+  return y ;
+}
+
 
 // [[Rcpp::export]]
 arma::cube listToCube (List mtx_list){
@@ -121,7 +128,7 @@ List cubeToList (arma::cube xcube){
 
 // [[Rcpp::export]]
 List foreShiftCpp(List mtx_list,
-                  NumericVector cap,
+                  NumericVector cap_charge,
                   Environment env_fit,
                   Language call_fit,
                   Environment env_aux,
@@ -134,19 +141,14 @@ List foreShiftCpp(List mtx_list,
   // define initial demand from the argument passed from above
   NumericVector cdemand = Rf_eval(call_aux, env_fit);
   NumericVector zdemand = clone(cdemand);
-  // and an empty vector for the flexible demand
-  // NumericVector fdemand = clone(cdemand);
-  // fdemand.fill(0);
-  // and an empty vector for the flexible demand of each object
-  NumericVector odemand = clone(cdemand);
-  odemand.fill(0);
-  
+
   // build a cube with the input
   arma::cube xcube = listToCube(mtx_list);
   
   // define an empty cube for the results
   arma::cube fcube = xcube;
   fcube.zeros();
+  
   // Chunk size for object and column (mean/30)
   arma::mat mtx_cmean = mean(xcube, 0)/30;
   
@@ -162,14 +164,13 @@ List foreShiftCpp(List mtx_list,
   for (int c=1; c < n_col; ++c) {
     for (int s=0; s < n_slice ; ++s) {
       
+      // odemand is the total of allocated in a given object
       
-      //reboot the object demand
-      odemand.fill(0);
+      NumericVector odemand = asNumericVector(arma::sum(fcube.slice(s), 1));
+    
       
       //find the cap for this object
-      double icap = cap[s];
-      
-      
+      double icap = cap_charge[s];
       
       for (int r=0; r < n_row; ++r) {
         
@@ -192,41 +193,24 @@ List foreShiftCpp(List mtx_list,
           env_aux = envCurrent(env_fit, env_aux, r, c);
           NumericVector ifit = Rf_eval(call_fit, env_aux);
           
-          
-          
           // works with cap
           if (icap > 0) {
             // check current flexibility allocated
             NumericVector iflex = sliceCurrent(odemand,r,c);
-            
-            // Rcout << iflex;
-            
+
             // disallow (convert to NA) the values higher than the cap of the object
             if (is_true(any(iflex < icap))) {
               for (int k=0; k < iflex.size(); ++k) {
                 if (iflex[k] >= icap) ifit[k] = NA_REAL;
               }
             }
-
-            // DEPLOY THE WATCH
-            
-            // slide to the future if it is not possible to allocate any chunk
-            // if (is_true(all(iflex >= cap)) & (cap_spread == true)) {
-            //   xcube(r+1,c,s) = xcube(i+1,c,s) +
-            //     sum(chunks.import(chunks.begin()+i, chunks.end()));
-            //   // update the proportion cube
-            //   arma::mat mtx_cssumn = sum(xcube, 2);
-            //   arma::cube pcube = xcube.each_slice() / mtx_cssumn;
-            //   break;
-            // }
           }
 
           // Where to put the chunk
           int imin = whichMin(ifit);
           
-          // the chunk may be distributed over several objects in fcube
+          // the chunk may be distributed over several objects in fcube (tube)
           fcube.tube(r+imin, c) = fcube.tube(r+imin, c) + (chunks[i] * pcube.tube(r,c));
-          //fcube(r+imin,c,s) = fcube(r+imin,c,s) + chunks[i]; // the previous alternative
 
           // and to the total of flex consumption
           cdemand(r+imin) = cdemand(r+imin) + chunks[i];
