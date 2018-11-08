@@ -172,13 +172,14 @@ List foreShiftCpp(List mtx_list,
       //find the cap for this object
       double icap = cap_charge[s];
       
-      for (int r=0; r < n_row; ++r) {
+      // for (int r=0; r < n_row; ++r) {
+      for (int r = n_row - 1; r >= 0; --r) {
         
         // if there is nothing to distribute, go directly to the next iteration
         if (xcube(r, c, s) == 0) continue;
 
         // at the last rows(time), the flexible is not considered
-        if ( r+1 >= n_row - c) break;
+        if ( r+1 >= n_row - c) continue; // changed from break;
         
         // divide to distribute in chunks of the indicated size
         double m = 0;
@@ -203,7 +204,7 @@ List foreShiftCpp(List mtx_list,
               for (int k=0; k < iflex.size(); ++k) {
                 if (iflex[k] >= icap) ifit[k] = NA_REAL;
               }
-            }
+            } 
           }
 
           // Where to put the chunk
