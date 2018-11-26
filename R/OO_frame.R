@@ -65,6 +65,10 @@ e_frame <- R6Class("e_frame",
                         self$setup$units$price <- unit
                         return(invisible(self))
                       },
+                      set_cap = function(vector){
+                      self$infrastructure$input$grid$capacity <- vector
+                      return(invisible(self))
+                      },
 # do ----------------------------------------------------------------------
                       do_foreshift = function(add_input_vct = NULL, fit = ~ 1*.demand){
                         
@@ -75,7 +79,8 @@ e_frame <- R6Class("e_frame",
                         
                         init_input_vct <- list(.demand_fixed = self$demand$input$fixed %||% NULL, 
                                                .production_fixed = self$production$sum_fixed %||% NULL, 
-                                               .price = self$utility$input$price %||% NULL)
+                                               .price = self$utility$input$price %||% NULL, 
+                                               .cap = self$infrastructure$input$grid$capacity %||% NULL)
                         
                         clean_input_vct <-  Filter(Negate((is.null)), init_input_vct)
                         total_input_vct <- c(clean_input_vct, add_input_vct)
