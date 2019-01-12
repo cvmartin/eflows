@@ -164,8 +164,7 @@ List foreShiftCpp(List mtx_list,
   for (int c=1; c < n_col; ++c) {
     for (int s=0; s < n_slice ; ++s) {
       
-      // odemand is the total of allocated in a given object
-      
+      // odemand is the total of allocated in a given object over time
       NumericVector odemand = asNumericVector(arma::sum(fcube.slice(s), 1));
     
       
@@ -179,13 +178,13 @@ List foreShiftCpp(List mtx_list,
         if (xcube(r, c, s) == 0) continue;
 
         // at the last rows(time), the flexible is not considered
-        if ( r+1 >= n_row - c) continue; // changed from break;
-        
-        // divide to distribute in chunks of the indicated size
-        double m = 0;
+        // NO! do a c_adjusted and just limit how far can the algorithm display
+        if ( r+1 >= n_row - c) continue; 
         
         //selecting the mean is different if there is only one slice
+        double m = 0;
         if (n_slice == 1) m = mtx_cmean(s,c); else  m = mtx_cmean(c,s);
+        // divide to distribute in chunks of the indicated size
         NumericVector chunks = divideInChunks(xcube(r,c,s), m);
         
         for (int i=0; i < chunks.size(); ++i) {
@@ -199,7 +198,7 @@ List foreShiftCpp(List mtx_list,
             // check current flexibility allocated
             NumericVector iflex = sliceCurrent(odemand,r,c);
 
-            // disallow (convert to NA) the values higher than the cap of the object
+            // disallow (convert to NA) values equal/higher than object cap
             if (is_true(any(iflex < icap))) {
               for (int k=0; k < iflex.size(); ++k) {
                 if (iflex[k] >= icap) ifit[k] = NA_REAL;
@@ -208,6 +207,11 @@ List foreShiftCpp(List mtx_list,
           }
 
           // Where to put the chunk
+          // if (any(iflex < ibottom & iflex > 0)){
+          //   imin = THAT ONE
+          // } else {
+          // THE THING BELOW HERE
+          // }
           int imin = whichMin(ifit);
           
           // the chunk may be distributed over several objects in fcube (tube)
