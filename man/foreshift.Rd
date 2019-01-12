@@ -4,12 +4,14 @@
 \alias{foreshift}
 \title{Shift demand to the future}
 \usage{
-foreshift(input_mtx, flex_step, input_vct, fit = ~1 * .demand)
+foreshift(input_mtx, flex_step, cap, input_vct, fit = ~1 * .demand)
 }
 \arguments{
 \item{input_mtx}{list of flexible matrices}
 
 \item{flex_step}{list of flexibility steps}
+
+\item{cap}{list of cap per object}
 
 \item{input_vct}{list of input vectorized}
 
