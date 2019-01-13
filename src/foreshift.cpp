@@ -141,6 +141,9 @@ List foreShiftCpp(List mtx_list,
   // define initial demand from the argument passed from above
   NumericVector cdemand = Rf_eval(call_aux, env_fit);
   NumericVector zdemand = clone(cdemand);
+  
+  // define the unallocated variable
+  double unallocated = 0;
 
   // build a cube with the input
   arma::cube xcube = listToCube(mtx_list);
@@ -176,8 +179,12 @@ List foreShiftCpp(List mtx_list,
         if (xcube(r, c, s) == 0) continue;
 
         // at the last rows(time), the flexible is not considered
-        // NO! do a c_adjusted and just limit how far can the algorithm display
-        if ( r+1 >= n_row - c) continue; 
+        // but added to unallocated variable
+        // if ( r + 1 >= n_row - c) {
+        if ( r  >= n_row - c) {
+          unallocated = unallocated + xcube(r, c, s);
+          continue;
+        }
         
         //selecting the mean is different if there is only one slice
         double m = 0;
@@ -185,7 +192,7 @@ List foreShiftCpp(List mtx_list,
         // divide to distribute in chunks of the indicated size
         NumericVector chunks = divideInChunks(xcube(r,c,s), m);
         
-        for (int i=0; i < chunks.size(); ++i) {
+        for (int i = 0; i < chunks.size(); ++i) {
           
           // Recalculate the local fit curve in its environment
           env_aux = envCurrent(env_fit, env_aux, r, c);
@@ -234,6 +241,7 @@ List foreShiftCpp(List mtx_list,
   
   List sol = List::create(_["demand_fixed"]= zdemand,
                           _["demand_flex"]= flist,
+                          _["unallocated"]= unallocated,
                           _["fit_curve_initial"]= fit_curve_initial,
                           _["fit_curve_final"] = fit_curve_final);
   

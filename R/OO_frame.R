@@ -95,10 +95,6 @@ e_frame <- R6Class("e_frame",
                           fit = fit
                           )
                         
-                        self$demand$output$fixed <- fshifted$demand_fixed
-                        self$utility$input$fit$curve <- fshifted$fit_curve_initial
-                        self$utility$output$fit$curve <- fshifted$fit_curve_final
-                        
                         build_output_flex <- function(data, steps, name, cap){
                           list(data = data,
                                steps = steps, 
@@ -114,6 +110,12 @@ e_frame <- R6Class("e_frame",
                                  cap = list_cap, 
                                  SIMPLIFY = FALSE
                           )
+                        
+                        self$demand$output$fixed <- fshifted$demand_fixed
+                        self$demand$output$unallocated <- fshifted$unallocated
+                        
+                        self$utility$input$fit$curve <- fshifted$fit_curve_initial
+                        self$utility$output$fit$curve <- fshifted$fit_curve_final
                         
                         return(invisible(self))
                       }
