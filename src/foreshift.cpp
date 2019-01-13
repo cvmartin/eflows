@@ -180,7 +180,6 @@ List foreShiftCpp(List mtx_list,
 
         // at the last rows(time), the flexible is not considered
         // but added to unallocated variable
-        // if ( r + 1 >= n_row - c) {
         if ( r  >= n_row - c) {
           unallocated = unallocated + xcube(r, c, s);
           continue;
