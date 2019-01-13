@@ -25,10 +25,10 @@
 #' @examples
 #' 1+1
 foreshift <- function(input_mtx,
-                       flex_step,
-                      cap,
-                       input_vct,
-                       fit = ~ 1*.demand
+                      flex_step,
+                      cap = NULL,
+                      input_vct,
+                      fit = ~ 1*.demand
 ){
 
   # You can also pass the formula as a character

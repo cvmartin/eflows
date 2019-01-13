@@ -161,17 +161,15 @@ List foreShiftCpp(List mtx_list,
   int n_row = xcube.n_rows; // time
   int n_slice = xcube.n_slices; // object
 
-  for (int c=1; c < n_col; ++c) {
+  for (int c=0; c < n_col; ++c) {
     for (int s=0; s < n_slice ; ++s) {
       
       // odemand is the total of allocated in a given object over time
       NumericVector odemand = asNumericVector(arma::sum(fcube.slice(s), 1));
     
-      
       //find the cap for this object
       double icap = cap_charge[s];
-      
-      // for (int r=0; r < n_row; ++r) {
+    
       for (int r = n_row - 1; r >= 0; --r) {
         
         // if there is nothing to distribute, go directly to the next iteration
