@@ -66,8 +66,13 @@ e_frame <- R6Class("e_frame",
                         return(invisible(self))
                       },
                       set_cap = function(vector){
-                      self$infrastructure$input$grid$capacity <- vector
-                      return(invisible(self))
+                        self$infrastructure$input$grid$capacity <- vector
+                        return(invisible(self))
+                      },
+                      set_storage = function(obj){
+                        assert_that(inherits(obj, "e_storage"))
+                        self$storage <- obj
+                        return(invisible(self))
                       },
 # do ----------------------------------------------------------------------
                       do_foreshift = function(add_input_vct = NULL, fit = ~ 1*.demand){

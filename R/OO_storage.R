@@ -1,4 +1,4 @@
-#' R6 class for the e_demand
+#' R6 class for the e_storage
 #' 
 #' @docType class
 #' @export
@@ -17,25 +17,21 @@
 #'   \item{\code{createsession(sessionname = "")}}{This method creates new session on the server with optionally given name in \code{sessionname}.}
 #'   \item{\code{usesession(sessionid)}}{This method changes currently used session on the server to the one with id given in \code{sessionid} parameter.}
 #' }
-e_demand <- R6Class("e_demand",
+e_storage <- R6Class("e_storage",
                     public = list(
-                      input = list(fixed = NULL,
-                                   flex = NULL),
+                      input = NULL,
                       output = NULL,
-                      initialize = function(fixed = c(),
-                                            flex = list()) {
-                        tolist <- listify(flex)
-                        assert_that(all_flex_mtx(tolist))
+                      initialize = function(input = list()) {
+                        tolist <- listify(input)
+                        lapply(tolist, function(x){assert_that(inherits(x, "storage"))})
                         names(tolist) <- lapply(tolist, function(x){x$name})
-                        self$input$fixed <- fixed
-                        self$input$flex <- tolist
+                        self$input <- tolist
                       }
-                      
                     )
 )
 
 
-#' Class to generate a flexibilty matrix
+#' Class to define a storage
 #' 
 #' @docType class
 #' @export
@@ -45,23 +41,37 @@ e_demand <- R6Class("e_demand",
 #' \describe{
 #'   \item{\code{example_method(parameter_1 = 3)}}{This method uses \code{parameter_1} to ...}
 #' }
-flex_mtx <- R6Class("flex_mtx",
+storage <- R6Class("storage",
                     public = list(
                       name = NULL,
-                      data = NULL,
-                      steps = NULL,
-                      cap = NULL,
-                      initialize = function(data = matrix(),
-                                            steps = c(),
+                      vol = NULL, 
+                      soc = NULL, 
+                      cap = list(to = NULL, 
+                                 from = NULL),
+                      eff = list(to = NULL,
+                                 from = NULL),
+                      self_discharge = NULL,
+                      initialize = function(vol, 
+                                            soc = 0, 
                                             name = NULL, 
-                                            cap = NULL) {
-                        assert_that(ncol(data) == length(steps))
+                                            cap = NULL, 
+                                            eff = 1, 
+                                            self_discharge = 0) {
                         
                         self$name <- name
-                        self$data <- data
-                        self$steps <- steps
-                        self$cap <- cap
+                        self$vol <- vol
+                        self$soc <- soc
+                        self$cap <- ifelse(
+                          length(cap) == 1,
+                          list(to = cap, from = cap),
+                          list(to = cap[1], from = cap[2])
+                          )
+                        self$eff <- ifelse(
+                          length(eff) == 1,
+                          list(to = eff, from = eff),
+                          list(to = eff[1], from = eff[2])
+                        )
+                        self$self_discharge <- self_discharge
                       }
                     )
 )
-

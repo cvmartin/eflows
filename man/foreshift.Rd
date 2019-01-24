@@ -4,7 +4,8 @@
 \alias{foreshift}
 \title{Shift demand to the future}
 \usage{
-foreshift(input_mtx, flex_step, cap, input_vct, fit = ~1 * .demand)
+foreshift(input_mtx, flex_step, cap = NULL, input_vct, fit = ~1 *
+  .demand)
 }
 \arguments{
 \item{input_mtx}{list of flexible matrices}
