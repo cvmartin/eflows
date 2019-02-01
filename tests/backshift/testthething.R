@@ -1,6 +1,7 @@
 
 library(eflows)
 library(eflows.viz)
+library(dplyr)
 
 # calculations (eflows) ---------------------------------------------------
 
@@ -8,16 +9,14 @@ library(eflows.viz)
 test_object <- e_frame$new(sept$datetime[1:168])$
   set_demand(e_demand$new(fixed = sept$d_household[1:168]))$
   set_price(sept$eprice[1:168]*0.6, unit = "euro/mWh")$
-  set_storage(e_storage$new(storage$new(vol = 23)))
+  set_storage(e_storage$new(storage$new(vol = 23, name = "battery")))
 
+test_object$storage$input$battery$eff
+test_object$storage$input$battery$cap
 
 
 # backshift ---------------------------------------------------------------
 
-
-vec_depreciated <- function(length, deprec = 0.05) {
-  sapply(seq(1,length),(function(x) {(1-deprec)^x}))
-}
 
 df_to_ts <- function(df) {
   require(xts)
@@ -30,8 +29,9 @@ ts_to_df <- function(tseries){
   as_tibble(data.frame(datetime=index(tseries), coredata(tseries)))
 }
 
-appreciate <- function(vector, eff = list(timestep, to_battery, from_battery), 
-                       backwards = FALSE, depreciate) {
+appreciate <- function(vector, 
+                       eff = list(timestep, to_battery, from_battery), 
+                       backwards = FALSE, depreciate = FALSE) {
   
   res <- numeric(length(vector))
   
@@ -69,6 +69,12 @@ backshift <- function(consumption,
                       vol, 
                       vol_init = 0
 ) {
+  
+  # Yeah, this shouldn't be like this
+  eff[[1]] <- 1 - eff[[1]]
+  
+  if (is.null(cap[[1]])) cap[[1]] <- 0
+  if (is.null(cap[[2]])) cap[[2]] <- 0
   
   piece_def <- signif(median(consumption)/20,2)
   
@@ -134,7 +140,7 @@ backshift <- function(consumption,
           comp_present <- comp[j:k]
           # Find the position where it compensates to move the piece
           pos <- which_if(fit_corr, min, 
-                          (if (cap[[1]] > 0) {
+                          (if ((cap[[1]] > 0) & !is.null(cap[[1]]) ){
                             (comp_present < cap[[1]]) & fit_corr < fit[k]
                           } else {
                             fit_corr < fit[k] 
@@ -229,10 +235,13 @@ backshift(consumption = test_object$demand$input$fixed,
             fit = test_object$utility$input$price, 
             # param in do_backshift, or in the formula
             range = 6,
-            eff = list(0.9, 0.9, 0.9), 
-            cap = list(10, 10), 
-            vol = 23, 
-            vol_init = 20)
+            eff = list(test_object$storage$input$battery$self_discharge,
+                       test_object$storage$input$battery$eff[[1]],
+                       test_object$storage$input$battery$eff[[2]]), 
+            cap = list(test_object$storage$input$battery$cap[[1]],
+                       test_object$storage$input$battery$cap[[1]]), 
+            vol = test_object$storage$input$battery$vol, 
+            vol_init = test_object$storage$input$battery$soc)
 
 
 

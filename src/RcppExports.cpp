@@ -6,6 +6,48 @@
 
 using namespace Rcpp;
 
+// appreciate
+arma::vec appreciate(arma::vec vector, float self_discharge, List eff, bool backwards);
+RcppExport SEXP _eflows_appreciate(SEXP vectorSEXP, SEXP self_dischargeSEXP, SEXP effSEXP, SEXP backwardsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type vector(vectorSEXP);
+    Rcpp::traits::input_parameter< float >::type self_discharge(self_dischargeSEXP);
+    Rcpp::traits::input_parameter< List >::type eff(effSEXP);
+    Rcpp::traits::input_parameter< bool >::type backwards(backwardsSEXP);
+    rcpp_result_gen = Rcpp::wrap(appreciate(vector, self_discharge, eff, backwards));
+    return rcpp_result_gen;
+END_RCPP
+}
+// depreciate
+arma::vec depreciate(arma::vec vector, float self_discharge, List eff, bool backwards);
+RcppExport SEXP _eflows_depreciate(SEXP vectorSEXP, SEXP self_dischargeSEXP, SEXP effSEXP, SEXP backwardsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type vector(vectorSEXP);
+    Rcpp::traits::input_parameter< float >::type self_discharge(self_dischargeSEXP);
+    Rcpp::traits::input_parameter< List >::type eff(effSEXP);
+    Rcpp::traits::input_parameter< bool >::type backwards(backwardsSEXP);
+    rcpp_result_gen = Rcpp::wrap(depreciate(vector, self_discharge, eff, backwards));
+    return rcpp_result_gen;
+END_RCPP
+}
+// backshiftCpp
+List backshiftCpp(arma::vec consumption, float self_discharge, List eff, int horizon);
+RcppExport SEXP _eflows_backshiftCpp(SEXP consumptionSEXP, SEXP self_dischargeSEXP, SEXP effSEXP, SEXP horizonSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type consumption(consumptionSEXP);
+    Rcpp::traits::input_parameter< float >::type self_discharge(self_dischargeSEXP);
+    Rcpp::traits::input_parameter< List >::type eff(effSEXP);
+    Rcpp::traits::input_parameter< int >::type horizon(horizonSEXP);
+    rcpp_result_gen = Rcpp::wrap(backshiftCpp(consumption, self_discharge, eff, horizon));
+    return rcpp_result_gen;
+END_RCPP
+}
 // distributeCpp
 List distributeCpp(double flow, NumericVector soc, NumericVector vol, NumericVector share, NumericVector level, LogicalVector active, NumericVector eff, NumericVector cap);
 RcppExport SEXP _eflows_distributeCpp(SEXP flowSEXP, SEXP socSEXP, SEXP volSEXP, SEXP shareSEXP, SEXP levelSEXP, SEXP activeSEXP, SEXP effSEXP, SEXP capSEXP) {
@@ -127,6 +169,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_eflows_appreciate", (DL_FUNC) &_eflows_appreciate, 4},
+    {"_eflows_depreciate", (DL_FUNC) &_eflows_depreciate, 4},
+    {"_eflows_backshiftCpp", (DL_FUNC) &_eflows_backshiftCpp, 4},
     {"_eflows_distributeCpp", (DL_FUNC) &_eflows_distributeCpp, 8},
     {"_eflows_formatFlexSteps", (DL_FUNC) &_eflows_formatFlexSteps, 3},
     {"_eflows_divideInChunks", (DL_FUNC) &_eflows_divideInChunks, 2},

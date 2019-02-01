@@ -54,23 +54,18 @@ storage <- R6Class("storage",
                       initialize = function(vol, 
                                             soc = 0, 
                                             name = NULL, 
-                                            cap = NULL, 
-                                            eff = 1, 
+                                            cap = list(to = NULL, from = NULL), 
+                                            eff = list(to = 1, from = 1), 
                                             self_discharge = 0) {
                         
                         self$name <- name
                         self$vol <- vol
                         self$soc <- soc
-                        self$cap <- ifelse(
-                          length(cap) == 1,
-                          list(to = cap, from = cap),
-                          list(to = cap[1], from = cap[2])
-                          )
-                        self$eff <- ifelse(
-                          length(eff) == 1,
-                          list(to = eff, from = eff),
-                          list(to = eff[1], from = eff[2])
-                        )
+                       
+                        self$cap <- cap
+                        
+                        self$eff <- eff
+                        
                         self$self_discharge <- self_discharge
                       }
                     )
