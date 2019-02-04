@@ -9,7 +9,16 @@ library(dplyr)
 test_object <- e_frame$new(sept$datetime[1:168])$
   set_demand(e_demand$new(fixed = sept$d_household[1:168]))$
   set_price(sept$eprice[1:168]*0.6, unit = "euro/mWh")$
-  set_storage(e_storage$new(storage$new(vol = 23, name = "battery")))
+  set_storage(e_storage$new(storage$new(vol = 23, 
+                                        eff = list(0.9,0.9), 
+                                        self_discharge = 0.1,
+                                        name = "battery")))
+
+
+test_object$do_backshift
+
+
+
 
 test_object$storage$input$battery$eff
 test_object$storage$input$battery$cap

@@ -74,7 +74,7 @@ e_frame <- R6Class("e_frame",
                         self$storage <- obj
                         return(invisible(self))
                       },
-# do ----------------------------------------------------------------------
+# do: foreshift  ----------------------------------------------------------------
                       do_foreshift = function(add_input_vct = NULL, fit = ~ 1*.demand){
                         
                         list_data <- lapply(self$demand$input$flex, function(x){x[["data"]]})
@@ -98,7 +98,7 @@ e_frame <- R6Class("e_frame",
                           input_vct = total_input_vct,
                           flex_step = list_steps,
                           fit = fit
-                          )
+                        )
                         
                         build_output_flex <- function(data, steps, name, cap){
                           list(data = data,
@@ -123,6 +123,20 @@ e_frame <- R6Class("e_frame",
                         self$utility$output$fit$curve <- fshifted$fit_curve_final
                         
                         return(invisible(self))
+                      },
+# do:backshift ------------------------------------------------------------
+                      do_backshift = function(horizon = 8, add_input_vct = NULL, fit = ~ 1*.demand){
+                        
+                        bshifted <- backshift(
+                          input_vct = self$demand$input$fixed,
+                          horizon = horizon, 
+                          storage = self$storage$input
+                        )
+                        
+                        self$demand$output$bsh_pot <- bshifted$mtx_prebsh
+                        
+                        return(invisible(self))
+                        
                       }
                     )
 )
