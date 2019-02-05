@@ -15,7 +15,7 @@ test_object <- e_frame$new(sept$datetime[1:168])$
                                         name = "battery")))
 
 
-test_object$do_backshift
+test_object$do_backshift()
 
 
 

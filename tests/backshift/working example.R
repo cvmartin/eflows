@@ -5,39 +5,15 @@ library(dygraphs)
 library(eflows)
 
 bsh <- eflows:::backshiftCpp(eflows::sept$d_household[1:100], 
-                      0, 
+                      0.01, 
                       list(0.9, 0.9), 
-                      8)
+                      9)
 
-movs <- as.data.frame(bsh$mtx_moves)
-bsh$mtx_prebsh
-
-#####
-
-eflows:::fct_chop(seq(1,20), 4)
-
-# questioning <- data.frame(vect = bsh$mtx_moves,
-#                           index = seq(1,length(bsh$mtx_moves))) %>% 
-#   arrange(vect)
-#   
-
-# questioning <- as.data.frame(bsh$mtx_moves) %>% 
-#   mutate(index = seq(1,nrow(bsh$mtx_moves))) %>% 
-#   arrange(V3)
-# 
-# questioning$index == (bsh$mtx_moves_idx + 1)
-# 
-# 
-# what 
+# movs <- as.data.frame(bsh$mtx_moves)
+# bsh$mtx_prebsh
+# bsh$mtx_postbsh
 
 
-
-
-
-# data.frame(seq(1: length(bsh$veccon)),
-#            bsh$veccon,
-#            bsh$vecdep) %>% 
-#   dygraph()
 
 
 # prev --------------------------------------------------------------------
@@ -78,10 +54,27 @@ gridgains %>%
 
 bind_cols(x = seq(1,100),
           as_data_frame(eflows.viz:::mtx_reverse(bsh$mtx_prebsh)),
-          y = bsh$final_consumption) %>% 
+          y = eflows::sept$d_household[1:100] - apply(bsh$mtx_prebsh,1,sum)) %>% 
   dygraph() %>% 
   dyHighlight() %>% 
   dyOptions(stackedGraph = TRUE)
+
+bind_cols(x = seq(1,100),
+          as_data_frame(eflows.viz:::mtx_reverse(bsh$mtx_postbsh)),
+          final = bsh$final_consumption[,1] - apply(bsh$mtx_postbsh,1,sum)) %>% 
+  dygraph() %>% 
+  dyHighlight() %>% 
+  dyOptions(stackedGraph = TRUE)
+
+bind_cols(x = seq(1,100),
+          init = eflows::sept$d_household[1:100],
+          final = bsh$final_consumption[,1]) %>% 
+  dygraph() %>% 
+  dyHighlight() 
+
+sum(eflows::sept$d_household[1:100]) - sum(bsh$final_consumption[,1])
+
+
 
 
 

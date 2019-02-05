@@ -9,8 +9,8 @@ depreciate <- function(vector, self_discharge, eff, backwards) {
     .Call('_eflows_depreciate', PACKAGE = 'eflows', vector, self_discharge, eff, backwards)
 }
 
-fct_chop <- function(vector, n_pieces) {
-    .Call('_eflows_fct_chop', PACKAGE = 'eflows', vector, n_pieces)
+cont_to_fct <- function(vector, n_pieces) {
+    .Call('_eflows_cont_to_fct', PACKAGE = 'eflows', vector, n_pieces)
 }
 
 backshiftCpp <- function(consumption, self_discharge, eff, horizon) {

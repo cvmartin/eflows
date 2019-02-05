@@ -34,15 +34,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// fct_chop
-arma::vec fct_chop(arma::vec vector, int n_pieces);
-RcppExport SEXP _eflows_fct_chop(SEXP vectorSEXP, SEXP n_piecesSEXP) {
+// cont_to_fct
+arma::vec cont_to_fct(arma::vec vector, int n_pieces);
+RcppExport SEXP _eflows_cont_to_fct(SEXP vectorSEXP, SEXP n_piecesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec >::type vector(vectorSEXP);
     Rcpp::traits::input_parameter< int >::type n_pieces(n_piecesSEXP);
-    rcpp_result_gen = Rcpp::wrap(fct_chop(vector, n_pieces));
+    rcpp_result_gen = Rcpp::wrap(cont_to_fct(vector, n_pieces));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -183,7 +183,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_eflows_appreciate", (DL_FUNC) &_eflows_appreciate, 4},
     {"_eflows_depreciate", (DL_FUNC) &_eflows_depreciate, 4},
-    {"_eflows_fct_chop", (DL_FUNC) &_eflows_fct_chop, 2},
+    {"_eflows_cont_to_fct", (DL_FUNC) &_eflows_cont_to_fct, 2},
     {"_eflows_backshiftCpp", (DL_FUNC) &_eflows_backshiftCpp, 4},
     {"_eflows_distributeCpp", (DL_FUNC) &_eflows_distributeCpp, 8},
     {"_eflows_formatFlexSteps", (DL_FUNC) &_eflows_formatFlexSteps, 3},

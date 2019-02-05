@@ -61,7 +61,7 @@ arma::vec depreciate(arma::vec vector,
 }
 
 // [[Rcpp::export]]
-arma::vec fct_chop(arma::vec vector, 
+arma::vec cont_to_fct(arma::vec vector, 
                     int n_pieces){
   double rng = range(vector);
   double piece_size = rng/n_pieces;
@@ -82,7 +82,7 @@ List backshiftCpp(arma::vec consumption,
                   int horizon){
   
   // size of the piece
-  int precision = 100;
+  int precision = 200;
   float piece = (max(consumption)-min(consumption))/precision;
   
   arma::vec vec_local_empty = arma::zeros<arma::vec>(horizon);
@@ -124,10 +124,8 @@ List backshiftCpp(arma::vec consumption,
       // find the position to put the piece in 
       int pos_min = io - horizon + 1 + loc_min;
       double gain = (piece * cons_copy[io]) - (piece * cons_copy[pos_min]);
-      
       // diminish the consumption and repeat
       cons_copy[io] = cons_copy[io] - piece;
-      
       // populate the matrix: from
       mtx_moves(nrow_moves,0) = i;
       // times back
@@ -138,110 +136,86 @@ List backshiftCpp(arma::vec consumption,
       nrow_moves = nrow_moves + 1;
     }
   }
-  
+  // return a matrix with the right size
   mtx_moves = mtx_moves.head_rows(nrow_moves);
   
-  int gain_divisions = 5;
-  mtx_moves.col(3) = fct_chop(mtx_moves.col(2),gain_divisions);
+  // PART 2: RETURN THE MATRIX OF PRE-BACKSHIFT
   
+  // define a vector of indices: 
+  // what rows of mtx_moves provide more value
   arma::uvec mtx_moves_idx = arma::sort_index(mtx_moves.col(2), "descend");
   int index_length = mtx_moves_idx.n_elem;
-  
-  // PART 2: RETURN THE MATRIX OF PRE-BACKSHIFT
-  // int gain_divisions = 5;
-  // double gain_size = index_length/gain_divisions;
-  // arma::vec classify = mtx_moves.col(3);
-  // classify.ones();
-  // for (int i=0; i < gain_divisions; ++i) {
-  //   int from = ceil(gain_size*i);
-  //   int until = ceil(gain_size*(i+1));
-  //   // higuer number means higuer gains
-  //   // classify.elem(mtx_moves_idx.subvec(from,until)).fill(gain_divisions-i);
-  //   classify.elem()
-  // } 
-  // mtx_moves.col(3) = classify;
-  
+  int gain_divisions = 5;
+  mtx_moves.col(3) = cont_to_fct(mtx_moves.col(2),gain_divisions);
+
   arma::mat mtx_prebsh = arma::zeros<arma::mat>(cons_length,5);
   for (int row = 0; row < index_length; ++row) {
     int r = mtx_moves(row,0);
     int c = mtx_moves(row,3);
     mtx_prebsh(r, c) = mtx_prebsh(r, c) + piece;
   }
+  // PART 3: DISTRIBUTE THE POINTS
+
+  // to go faster, keep track if the point is not allowed anymore
+  arma::vec vct_cons_allowed = arma::ones<arma::vec>(cons_length);
+  // `cons_mutable` is defined outside the loop, because it changes
+  // as the algorithm runs
+  arma::vec cons_mutable = vec_offset;
+  cons_mutable.insert_rows(cons_mutable.n_rows, consumption);
+  // define the post-backshift matrix, as an empty copy of the previous one
+  arma::mat mtx_postbsh = mtx_prebsh;
+  mtx_postbsh.zeros();
   
-  
-  // PART 3: SETUP THE POINTS
-  
-  
-  arma::vec vct_index_available = arma::ones<arma::vec>(index_length);
-  
-  arma::vec cons_clone = vec_offset;
-  cons_clone.insert_rows(cons_clone.n_rows, consumption);
-  
-  
-  for (int row = 0; row < index_length; ++row) {
-    
-    int i = mtx_moves(row,0);
+  for (int e = 0; e < index_length; ++e) {
+    // what row of mtx_moves are we talking about?
+    // the one defined by the index in the position `e`
+    int i = mtx_moves(mtx_moves_idx(e),0);
+    // if the point is disabled, move on to the next
+    // if (vct_cons_allowed[i] == 0) continue;
+    // define `c`, the column the point belongs to
+    int c = mtx_moves(mtx_moves_idx(e),3);
+    // variable `io`, that includes the 
     int io = i + horizon;
-    
-    // Rcout << i;
-    
-    // if the point is disabled, move on
-    // if (vct_index_available[i] == 0) continue;
  
-    // `io` is `i` plus the offset of NAs that are at the start of cons_copy
-    // To work with the time horizon that is before the initial time boundary. 
     
-    
-    while(cons_clone[io] > 0) {
+    while(cons_mutable[io] > 0) {
       
       arma::vec vec_local_deprec = depreciate(
-        vec_local_empty.fill(cons_clone[io]),
+        vec_local_empty.fill(cons_mutable[io]),
         self_discharge, 
         eff, 
         true
       );
-      // 
-      // if (i == 100){
-      //   Rcout << "after deprec";
-      // }
-      
       // local consumption to compare with
-      vec_local_cons = cons_clone.subvec(io - horizon + 1, io);
-      
-      // if (i == 100){
-      //   Rcout << " subvec";
-      //   Rcout << " subvec";
-      // }
-      
-      
+      vec_local_cons = cons_mutable.subvec(io - horizon + 1, io);
       // find the best point comparing the initial consumption
       // and the depreciation curve 
       vec_local_diff = vec_local_deprec - vec_local_cons;
       int loc_min = vec_local_diff.index_max();
-      
-     
-      
-      // if there is no point available anymore
-      // disallow it
+      // when no more gain in point, disallow it
       if (vec_local_diff[loc_min] <= 0) {
-        // vct_index_available[i] = 0;
+        // vct_cons_allowed[i] = 0;
         break;
       }
       // update the clone of consumption
-      cons_clone[io] = cons_clone[io] - piece;
+      cons_mutable[io] = cons_mutable[io] - piece;
       
       int pos_min = io - horizon + loc_min + 1;
-      cons_clone[pos_min] = cons_clone[pos_min] + piece;
+      cons_mutable[pos_min] = cons_mutable[pos_min] + piece;
+      
+      // update the postbsh matrix
+      mtx_postbsh(pos_min - horizon,c) = mtx_postbsh(pos_min - horizon,c) + piece;
       
     }
   }
 
-  arma::vec final_consumption = cons_clone.tail(cons_length);
+  arma::vec final_consumption = cons_mutable.tail(cons_length);
   
   return List::create(
-    // _["mtx_moves"]= mtx_moves, 
+    _["mtx_moves"]= mtx_moves,
                       // _["mtx_moves_idx"]= mtx_moves_idx,
                       _["mtx_prebsh"]= mtx_prebsh,
+                      _["mtx_postbsh"]= mtx_postbsh,
                       _["final_consumption"]= final_consumption
                       // _["indices"]= indices
                         );
