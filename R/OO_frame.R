@@ -134,6 +134,8 @@ e_frame <- R6Class("e_frame",
                         )
                         
                         self$demand$output$bsh_pot <- bshifted$mtx_prebsh
+                        self$demand$output$backshifted <- bshifted$mtx_postbsh
+                        self$demand$output$fixed <- bshifted$final_consumption
                         
                         return(invisible(self))
                         

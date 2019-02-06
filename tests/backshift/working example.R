@@ -3,11 +3,19 @@ library(tidyr)
 library(purrr)
 library(dygraphs)
 library(eflows)
+library(eflows.viz)
 
-bsh <- eflows:::backshiftCpp(eflows::sept$d_household[1:100], 
+bsh <- eflows:::backshiftCpp(eflows::sept$d_household[1:100]*100, 
                       0.01, 
                       list(0.9, 0.9), 
                       9)
+
+
+bsh$mtx_prebsh %>% apply(2,sum)
+bsh$mtx_postbsh %>% apply(2,sum)
+
+
+
 
 # movs <- as.data.frame(bsh$mtx_moves)
 # bsh$mtx_prebsh
@@ -54,7 +62,7 @@ gridgains %>%
 
 bind_cols(x = seq(1,100),
           as_data_frame(eflows.viz:::mtx_reverse(bsh$mtx_prebsh)),
-          y = eflows::sept$d_household[1:100] - apply(bsh$mtx_prebsh,1,sum)) %>% 
+          y = eflows::sept$d_household[1:100]*100 - apply(bsh$mtx_prebsh,1,sum)) %>% 
   dygraph() %>% 
   dyHighlight() %>% 
   dyOptions(stackedGraph = TRUE)
@@ -67,12 +75,12 @@ bind_cols(x = seq(1,100),
   dyOptions(stackedGraph = TRUE)
 
 bind_cols(x = seq(1,100),
-          init = eflows::sept$d_household[1:100],
+          init = eflows::sept$d_household[1:100]*100,
           final = bsh$final_consumption[,1]) %>% 
   dygraph() %>% 
   dyHighlight() 
 
-sum(eflows::sept$d_household[1:100]) - sum(bsh$final_consumption[,1])
+sum(eflows::sept$d_household[1:100]*100) - sum(bsh$final_consumption[,1])
 
 
 

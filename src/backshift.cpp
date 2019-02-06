@@ -81,6 +81,8 @@ List backshiftCpp(arma::vec consumption,
                   List eff,
                   int horizon){
   
+  horizon = horizon + 1;
+  
   // size of the piece
   int precision = 200;
   float piece = (max(consumption)-min(consumption))/precision;
@@ -123,7 +125,8 @@ List backshiftCpp(arma::vec consumption,
       if (vec_local_diff[loc_min] <= 0) break;
       // find the position to put the piece in 
       int pos_min = io - horizon + 1 + loc_min;
-      double gain = (piece * cons_copy[io]) - (piece * cons_copy[pos_min]);
+      double gain = (piece * cons_copy[io]) - (piece * (cons_copy[pos_min]+piece));
+      if (gain <= 0) break;
       // diminish the consumption and repeat
       cons_copy[io] = cons_copy[io] - piece;
       // populate the matrix: from
@@ -163,8 +166,7 @@ List backshiftCpp(arma::vec consumption,
   arma::vec cons_mutable = vec_offset;
   cons_mutable.insert_rows(cons_mutable.n_rows, consumption);
   // define the post-backshift matrix, as an empty copy of the previous one
-  arma::mat mtx_postbsh = mtx_prebsh;
-  mtx_postbsh.zeros();
+  arma::mat mtx_postbsh = arma::zeros<arma::mat>(cons_length,5);
   
   for (int e = 0; e < index_length; ++e) {
     // what row of mtx_moves are we talking about?
@@ -176,37 +178,48 @@ List backshiftCpp(arma::vec consumption,
     int c = mtx_moves(mtx_moves_idx(e),3);
     // variable `io`, that includes the 
     int io = i + horizon;
+    
+    // if (e == 1){
+    //   Rcout << "mtx_moves_idx.head_rows(10)";
+    //   Rcout << mtx_moves_idx.head_rows(10);
+    //   Rcout << "mtx_postbsh.head_rows(10)";
+    //   Rcout << mtx_postbsh.head_rows(10);
+    // }
+    
+    arma::vec vec_local_deprec = depreciate(
+      vec_local_empty.fill(cons_mutable[io]),
+      self_discharge, 
+      eff, 
+      true
+    );
+    // local consumption to compare with
+    vec_local_cons = cons_mutable.subvec(io - horizon + 1, io);
+    // find the best point comparing the initial consumption
+    // and the depreciation curve 
+    vec_local_diff = vec_local_deprec - vec_local_cons;
+    int loc_min = vec_local_diff.index_max();
+    // when no more gain in point, disallow it
+    // if (vec_local_diff[loc_min] <= 0) {
+    //   // vct_cons_allowed[i] = 0;
+    //   break;
+    // }
+    int pos_min = io - horizon + 1 + loc_min;
+    double gain = (piece * cons_mutable[io]) - (piece * (cons_mutable[pos_min]));
+    if (gain <= 0) {
+      // vct_cons_allowed[i] = 0;
+      continue;
+    } 
+    
+    // update the clone of consumption
+    cons_mutable[io] = cons_mutable[io] - piece;
+  
+    cons_mutable[pos_min] = cons_mutable[pos_min] + piece;
+    
+    // update the postbsh matrix
+    mtx_postbsh(pos_min - horizon,c) = mtx_postbsh(pos_min - horizon,c) + piece;
  
     
-    while(cons_mutable[io] > 0) {
-      
-      arma::vec vec_local_deprec = depreciate(
-        vec_local_empty.fill(cons_mutable[io]),
-        self_discharge, 
-        eff, 
-        true
-      );
-      // local consumption to compare with
-      vec_local_cons = cons_mutable.subvec(io - horizon + 1, io);
-      // find the best point comparing the initial consumption
-      // and the depreciation curve 
-      vec_local_diff = vec_local_deprec - vec_local_cons;
-      int loc_min = vec_local_diff.index_max();
-      // when no more gain in point, disallow it
-      if (vec_local_diff[loc_min] <= 0) {
-        // vct_cons_allowed[i] = 0;
-        break;
-      }
-      // update the clone of consumption
-      cons_mutable[io] = cons_mutable[io] - piece;
-      
-      int pos_min = io - horizon + loc_min + 1;
-      cons_mutable[pos_min] = cons_mutable[pos_min] + piece;
-      
-      // update the postbsh matrix
-      mtx_postbsh(pos_min - horizon,c) = mtx_postbsh(pos_min - horizon,c) + piece;
-      
-    }
+ 
   }
 
   arma::vec final_consumption = cons_mutable.tail(cons_length);

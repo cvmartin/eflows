@@ -17,6 +17,10 @@ test_object <- e_frame$new(sept$datetime[1:168])$
 
 test_object$do_backshift()
 
+test_object$demand$output$fixed %>% plot(type = "l")
+
+(test_object$demand$output$fixed - apply(test_object$demand$output$backshifted, 1, sum)) %>% plot(type = "l")
+
 
 
 
@@ -24,14 +28,16 @@ test_object$storage$input$battery$eff
 test_object$storage$input$battery$cap
 
 
+
+
+
 # backshift ---------------------------------------------------------------
 
 
 df_to_ts <- function(df) {
-  require(xts)
   new_ts <- xts(x = df[, 2:(length(colnames(df)))], order.by = df[[1]])
   if (is.null(colnames(new_ts))) colnames(new_ts) <- colnames(df[2])
-  return(new_ts)
+  new_ts
 }
 
 ts_to_df <- function(tseries){
