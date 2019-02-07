@@ -30,7 +30,7 @@ foreshift <- function(input_mtx,
                       input_vct,
                       fit = ~ 1*.demand
 ){
-
+  
   # You can also pass the formula as a character
   if (is.character(fit)) fit <- as.formula(fit)
 
@@ -65,13 +65,13 @@ foreshift <- function(input_mtx,
   }
 
   # .cap_flex and .cap_demand. Both are important.
-  if (!(".cap_flex" %in% names(input_vct))) {
-    input_vct[[".cap_flex"]] <- rep(0, nrow(mtx_list[[1]]))
-  }
+  # if (!(".cap_flex" %in% names(input_vct))) {
+  #   input_vct[[".cap_flex"]] <- rep(0, nrow(mtx_list[[1]]))
+  # }
 
-  if (!(".cap_demand" %in% names(input_vct))) {
-    input_vct[[".cap_demand"]] <- rep(0, nrow(mtx_list[[1]]))
-  }
+  # if (!(".cap_demand" %in% names(input_vct))) {
+  #   input_vct[[".cap_demand"]] <- rep(0, nrow(mtx_list[[1]]))
+  # }
   
   # the list input_vct is instead an environment
   env_fit <- list2env(input_vct, parent = safe_env)

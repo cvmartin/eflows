@@ -5,10 +5,19 @@ library(dygraphs)
 library(eflows)
 library(eflows.viz)
 
-bsh <- eflows:::backshiftCpp(eflows::sept$d_household[1:100]*100, 
-                      0.01, 
-                      list(0.9, 0.9), 
-                      9)
+input_vct <- list()
+input_vct[[".demand"]] <- sept$d_household[1:100]*100
+
+
+
+bsh <- eflows:::backshiftCpp(consumption = sept$d_household[1:100]*100, 
+                 self_discharge = 0.01, 
+                 eff = list(0.9, 0.9),
+                 horizon = 7,
+                 env_fit = list2env(input_vct),
+                 call_fit = (~ 1*.demand)[[2]], 
+                 env_aux = new.env(), 
+                 call_aux = (~ 1*.demand)[[2]])
 
 
 bsh$mtx_prebsh %>% apply(2,sum)

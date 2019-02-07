@@ -34,21 +34,73 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cont_to_fct
-arma::vec cont_to_fct(arma::vec vector, int n_pieces);
-RcppExport SEXP _eflows_cont_to_fct(SEXP vectorSEXP, SEXP n_piecesSEXP) {
+// contToFct
+arma::vec contToFct(arma::vec vector, int n_pieces);
+RcppExport SEXP _eflows_contToFct(SEXP vectorSEXP, SEXP n_piecesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec >::type vector(vectorSEXP);
     Rcpp::traits::input_parameter< int >::type n_pieces(n_piecesSEXP);
-    rcpp_result_gen = Rcpp::wrap(cont_to_fct(vector, n_pieces));
+    rcpp_result_gen = Rcpp::wrap(contToFct(vector, n_pieces));
+    return rcpp_result_gen;
+END_RCPP
+}
+// naPad
+arma::vec naPad(arma::vec vector, int horizon);
+RcppExport SEXP _eflows_naPad(SEXP vectorSEXP, SEXP horizonSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type vector(vectorSEXP);
+    Rcpp::traits::input_parameter< int >::type horizon(horizonSEXP);
+    rcpp_result_gen = Rcpp::wrap(naPad(vector, horizon));
+    return rcpp_result_gen;
+END_RCPP
+}
+// naPadEnv
+Environment naPadEnv(Environment input, Environment out, int horizon);
+RcppExport SEXP _eflows_naPadEnv(SEXP inputSEXP, SEXP outSEXP, SEXP horizonSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Environment >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< Environment >::type out(outSEXP);
+    Rcpp::traits::input_parameter< int >::type horizon(horizonSEXP);
+    rcpp_result_gen = Rcpp::wrap(naPadEnv(input, out, horizon));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sliceCurrent2
+arma::vec sliceCurrent2(arma::vec vec, int start, int end);
+RcppExport SEXP _eflows_sliceCurrent2(SEXP vecSEXP, SEXP startSEXP, SEXP endSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< int >::type start(startSEXP);
+    Rcpp::traits::input_parameter< int >::type end(endSEXP);
+    rcpp_result_gen = Rcpp::wrap(sliceCurrent2(vec, start, end));
+    return rcpp_result_gen;
+END_RCPP
+}
+// envCurrent2
+Environment envCurrent2(Environment input, Environment out, int start, int span);
+RcppExport SEXP _eflows_envCurrent2(SEXP inputSEXP, SEXP outSEXP, SEXP startSEXP, SEXP spanSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Environment >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< Environment >::type out(outSEXP);
+    Rcpp::traits::input_parameter< int >::type start(startSEXP);
+    Rcpp::traits::input_parameter< int >::type span(spanSEXP);
+    rcpp_result_gen = Rcpp::wrap(envCurrent2(input, out, start, span));
     return rcpp_result_gen;
 END_RCPP
 }
 // backshiftCpp
-List backshiftCpp(arma::vec consumption, float self_discharge, List eff, int horizon);
-RcppExport SEXP _eflows_backshiftCpp(SEXP consumptionSEXP, SEXP self_dischargeSEXP, SEXP effSEXP, SEXP horizonSEXP) {
+List backshiftCpp(arma::vec consumption, float self_discharge, List eff, int horizon, Environment env_fit, Language call_fit, Environment env_aux, Language call_aux);
+RcppExport SEXP _eflows_backshiftCpp(SEXP consumptionSEXP, SEXP self_dischargeSEXP, SEXP effSEXP, SEXP horizonSEXP, SEXP env_fitSEXP, SEXP call_fitSEXP, SEXP env_auxSEXP, SEXP call_auxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -56,7 +108,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< float >::type self_discharge(self_dischargeSEXP);
     Rcpp::traits::input_parameter< List >::type eff(effSEXP);
     Rcpp::traits::input_parameter< int >::type horizon(horizonSEXP);
-    rcpp_result_gen = Rcpp::wrap(backshiftCpp(consumption, self_discharge, eff, horizon));
+    Rcpp::traits::input_parameter< Environment >::type env_fit(env_fitSEXP);
+    Rcpp::traits::input_parameter< Language >::type call_fit(call_fitSEXP);
+    Rcpp::traits::input_parameter< Environment >::type env_aux(env_auxSEXP);
+    Rcpp::traits::input_parameter< Language >::type call_aux(call_auxSEXP);
+    rcpp_result_gen = Rcpp::wrap(backshiftCpp(consumption, self_discharge, eff, horizon, env_fit, call_fit, env_aux, call_aux));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -183,8 +239,12 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_eflows_appreciate", (DL_FUNC) &_eflows_appreciate, 4},
     {"_eflows_depreciate", (DL_FUNC) &_eflows_depreciate, 4},
-    {"_eflows_cont_to_fct", (DL_FUNC) &_eflows_cont_to_fct, 2},
-    {"_eflows_backshiftCpp", (DL_FUNC) &_eflows_backshiftCpp, 4},
+    {"_eflows_contToFct", (DL_FUNC) &_eflows_contToFct, 2},
+    {"_eflows_naPad", (DL_FUNC) &_eflows_naPad, 2},
+    {"_eflows_naPadEnv", (DL_FUNC) &_eflows_naPadEnv, 3},
+    {"_eflows_sliceCurrent2", (DL_FUNC) &_eflows_sliceCurrent2, 3},
+    {"_eflows_envCurrent2", (DL_FUNC) &_eflows_envCurrent2, 4},
+    {"_eflows_backshiftCpp", (DL_FUNC) &_eflows_backshiftCpp, 8},
     {"_eflows_distributeCpp", (DL_FUNC) &_eflows_distributeCpp, 8},
     {"_eflows_formatFlexSteps", (DL_FUNC) &_eflows_formatFlexSteps, 3},
     {"_eflows_divideInChunks", (DL_FUNC) &_eflows_divideInChunks, 2},

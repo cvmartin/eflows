@@ -75,7 +75,8 @@ e_frame <- R6Class("e_frame",
                         return(invisible(self))
                       },
 # do: foreshift  ----------------------------------------------------------------
-                      do_foreshift = function(add_input_vct = NULL, fit = ~ 1*.demand){
+                      do_foreshift = function(add_input_vct = NULL, 
+                                              fit = ~ 1*.demand){
                         
                         list_data <- lapply(self$demand$input$flex, function(x){x[["data"]]})
                         list_steps <- lapply(self$demand$input$flex, function(x){x[["steps"]]})
@@ -125,12 +126,24 @@ e_frame <- R6Class("e_frame",
                         return(invisible(self))
                       },
 # do:backshift ------------------------------------------------------------
-                      do_backshift = function(horizon = 8, add_input_vct = NULL, fit = ~ 1*.demand){
+                      do_backshift = function(add_input_vct = NULL,
+                                              horizon = 8, 
+                                              fit = ~ 1*.demand){
+                        
+                        init_input_vct <- list(.demand_fixed = self$demand$input$fixed %||% NULL, 
+                                               .production_fixed = self$production$sum_fixed %||% NULL, 
+                                               .price = self$utility$input$price %||% NULL, 
+                                               .cap = self$infrastructure$input$grid$capacity %||% NULL)
+                        
+                        clean_input_vct <-  Filter(Negate((is.null)), init_input_vct)
+                        total_input_vct <- c(clean_input_vct, add_input_vct)
                         
                         bshifted <- backshift(
-                          input_vct = self$demand$input$fixed,
+                          input_consumption = self$demand$input$fixed,
                           horizon = horizon, 
-                          storage = self$storage$input
+                          storage = self$storage$input,
+                          input_vct = total_input_vct,
+                          fit = fit
                         )
                         
                         self$demand$output$bsh_pot <- bshifted$mtx_prebsh

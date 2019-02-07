@@ -9,12 +9,28 @@ depreciate <- function(vector, self_discharge, eff, backwards) {
     .Call('_eflows_depreciate', PACKAGE = 'eflows', vector, self_discharge, eff, backwards)
 }
 
-cont_to_fct <- function(vector, n_pieces) {
-    .Call('_eflows_cont_to_fct', PACKAGE = 'eflows', vector, n_pieces)
+contToFct <- function(vector, n_pieces) {
+    .Call('_eflows_contToFct', PACKAGE = 'eflows', vector, n_pieces)
 }
 
-backshiftCpp <- function(consumption, self_discharge, eff, horizon) {
-    .Call('_eflows_backshiftCpp', PACKAGE = 'eflows', consumption, self_discharge, eff, horizon)
+naPad <- function(vector, horizon) {
+    .Call('_eflows_naPad', PACKAGE = 'eflows', vector, horizon)
+}
+
+naPadEnv <- function(input, out, horizon) {
+    .Call('_eflows_naPadEnv', PACKAGE = 'eflows', input, out, horizon)
+}
+
+sliceCurrent2 <- function(vec, start, end) {
+    .Call('_eflows_sliceCurrent2', PACKAGE = 'eflows', vec, start, end)
+}
+
+envCurrent2 <- function(input, out, start, span) {
+    .Call('_eflows_envCurrent2', PACKAGE = 'eflows', input, out, start, span)
+}
+
+backshiftCpp <- function(consumption, self_discharge, eff, horizon, env_fit, call_fit, env_aux, call_aux) {
+    .Call('_eflows_backshiftCpp', PACKAGE = 'eflows', consumption, self_discharge, eff, horizon, env_fit, call_fit, env_aux, call_aux)
 }
 
 distributeCpp <- function(flow, soc, vol, share = as.numeric( c(1)), level = as.numeric( c(1)), active = as.logical( c(1)), eff = as.numeric( c(1)), cap = as.numeric( c(0))) {
