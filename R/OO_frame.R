@@ -126,8 +126,8 @@ e_frame <- R6Class("e_frame",
                         return(invisible(self))
                       },
 # do:backshift ------------------------------------------------------------
-                      do_backshift = function(add_input_vct = NULL,
-                                              horizon = 8, 
+                      do_backshift = function(horizon = 8, 
+                                              add_input_vct = NULL,
                                               fit = ~ 1*.demand){
                         
                         init_input_vct <- list(.demand_fixed = self$demand$input$fixed %||% NULL, 
@@ -149,6 +149,9 @@ e_frame <- R6Class("e_frame",
                         self$demand$output$bsh_pot <- bshifted$mtx_prebsh
                         self$demand$output$backshifted <- bshifted$mtx_postbsh
                         self$demand$output$fixed <- bshifted$final_consumption
+                        
+                        self$utility$input$fit$curve <- bshifted$fit_curve_initial
+                        self$utility$output$fit$curve <- bshifted$fit_curve_final
                         
                         return(invisible(self))
                         

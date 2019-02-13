@@ -1,4 +1,3 @@
-
 library(eflows)
 library(eflows.viz)
 library(dplyr)
@@ -7,7 +6,7 @@ library(dplyr)
 
 
 test_object <- e_frame$new(sept$datetime[1:168])$
-  set_demand(e_demand$new(fixed = sept$d_household[1:168]))$
+  set_demand(e_demand$new(fixed = sept$d_house_smooth[1:168]*300))$
   set_production(e_production$new(fixed = list(solar = sept$solar[1:168]*120)))$
   set_price(sept$eprice[1:168]*0.6, unit = "euro/mWh")$
   set_storage(e_storage$new(storage$new(vol = 23, 
@@ -16,7 +15,33 @@ test_object <- e_frame$new(sept$datetime[1:168])$
                                         name = "battery")))
 
 
-test_object$do_backshift(horizon = 10)
+test_object$do_backshift(horizon = 24, fit = ~1*.production_fixed)
+
+pre <- viz_back_potential(test_object)
+post <- viz_back_output(test_object)
+
+solar <- data.frame(datetime = sept$datetime[1:168], 
+           solar =test_object$production$sum_fixed) %>% 
+  df_to_ts() %>% 
+  dygraph()
+
+viz_fit(test_object)
+
+htmltools::browsable(htmltools::tagList(list(solar, pre, post)))
+
+
+
+
+
+
+#####
+
+test_object$production$sum_fixed %>% plot(type = "l")
+
+
+
+
+viz_back_output(test_object)
 
 test_object$demand$output$fixed %>% plot(type = "l")
 

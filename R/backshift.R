@@ -27,7 +27,11 @@ backshift <- function(input_consumption,
   # You can also pass the formula as a character
   if (is.character(fit)) fit <- as.formula(fit)
   
-  input_vct[[".demand"]] <- input_consumption
+  if (".demand_fixed" %in% names(input_vct)) {
+    input_vct[[".demand"]] <- input_vct[[".demand_fixed"]]
+  } else {
+    input_vct[[".demand"]] <- rep(0, nrow(mtx_list[[1]]))
+  }
   
   # if (".demand_fixed" %in% names(input_vct)) {
   #   input_vct[[".demand"]] <- input_vct[[".demand_fixed"]]
@@ -36,6 +40,7 @@ backshift <- function(input_consumption,
   # }  
   
   env_fit <- list2env(input_vct, parent = safe_env)
+  
   call_fit <- fit[[2]]
   env_aux = new.env(parent = safe_env)
   call_aux <- (~ 1*.demand)[[2]]
