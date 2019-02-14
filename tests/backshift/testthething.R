@@ -15,7 +15,7 @@ test_object <- e_frame$new(sept$datetime[1:168])$
                                         name = "battery")))
 
 
-test_object$do_backshift(horizon = 24, fit = ~1*.production_fixed)
+test_object$do_backshift(horizon = 12, fit = ~1*.production_fixed)
 
 pre <- viz_back_potential(test_object)
 post <- viz_back_output(test_object)

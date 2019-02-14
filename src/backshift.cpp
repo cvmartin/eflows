@@ -139,10 +139,21 @@ List backshiftCpp(arma::vec consumption,
                   Environment env_aux,
                   Language call_aux){
   
-  horizon = horizon; //+1?
-
-  // every element in `env_fit` is extended with a NA of the horizon ??
-  env_fit = naPadEnv(env_fit, env_fit, horizon);
+  // to reverse at the end the NA padding
+  int init_length = consumption.n_elem;
+  
+  // every element in `env_fit` is extended with a NA of the horizon
+  CharacterVector fname = as<CharacterVector>(env_fit.ls(true));
+  for(int i = 0; i < fname.length(); ++i) {
+    std::string thename = as<std::string>(fname[i]);
+    env_fit[thename] = naPad(env_fit[thename], horizon);
+  }
+  //the same with the initial consumption
+  consumption = naPad(consumption, horizon);
+  
+  // the length, once padded
+  int padded_length = consumption.n_elem;
+  
 
   // size of the piece
   int precision = 200;
@@ -151,6 +162,7 @@ List backshiftCpp(arma::vec consumption,
   // define initial curve
   arma::vec fit_curve_initial = as<arma::vec>(Rf_eval(call_fit, env_fit));
   
+  // define some hel vairables
   arma::vec vec_local_empty = arma::zeros<arma::vec>(horizon);
   arma::vec vec_local_fit = arma::zeros<arma::vec>(horizon);
   arma::vec vec_local_diff = arma::zeros<arma::vec>(horizon);
@@ -158,34 +170,26 @@ List backshiftCpp(arma::vec consumption,
   
   arma::vec cons_copy_raw = env_fit[".demand"];
   
-  int cons_length = consumption.n_elem;
-  // Define the size of the matrix
-  arma::mat mtx_moves = arma::zeros<arma::mat>(cons_length*precision,4);
-  // counter for the nrows of the matrix
-  int nrow_moves = 0;
+  
+  // Define a matrix big enough to host moves
+  arma::mat mtx_moves = arma::zeros<arma::mat>(init_length*precision,4);
+  int nrow_mtx_moves = 0;
   
   arma::vec cons_master = env_fit[".demand"];
   
-  
-  for (int i=0; i < cons_length; ++i) {
+  // start in the `horizon`. Before, there are only NAs
+  for (int i = horizon; i < padded_length; ++i) {
     // grab a copy of consumption padded
-   
-    //// cons_copy.insert_rows(cons_copy.n_rows, consumption);
-    // `io` is `i` plus the offset of NAs that are at the start of cons_copy
-    // To work with the padded vectors
-    int io = i + horizon;
     
     arma::vec cons_copy = cons_master;
-    // arma::vec cons_mod = env_fit[".demand"];
-    // arma::vec fit_curve_local = as<arma::vec>(Rf_eval(call_fit, env_fit));
     
-    while(cons_copy[io] > piece) {
+    while(cons_copy[i] > piece) {
       
       env_fit[".demand"] = cons_copy;
-      arma::vec fit_curve_local = as<arma::vec>(Rf_eval(call_fit, env_fit));
+      arma::vec ifit = as<arma::vec>(Rf_eval(call_fit, env_fit));
       
       arma::vec vec_local_deprec = depreciate(
-        vec_local_empty.fill(fit_curve_local[io]),
+        vec_local_empty.fill(ifit[i]),
         self_discharge, 
         eff, 
         true
@@ -193,7 +197,7 @@ List backshiftCpp(arma::vec consumption,
    
       // local fitting to compare with
       // INSTEAD OF fit_curve_initial
-      vec_local_fit = fit_curve_local.subvec(io - horizon, io - 1); //??
+      vec_local_fit = ifit.subvec(i - horizon, i - 1);
       // find the best point comparing the initial consumption
     
       vec_local_diff = vec_local_deprec - vec_local_fit;
@@ -201,28 +205,28 @@ List backshiftCpp(arma::vec consumption,
       // if there is no good place to allocate, break
       if (vec_local_diff[loc_min] <= 0) break;
       // find the position to put the piece in 
-      int pos_min = io - horizon + loc_min;
+      int pos_min = i - horizon + loc_min;
       // the gain has directly to do with the initial fitting curve
       //       // INSTEAD OF fit_curve_initial
-      double gain = (piece * fit_curve_local[io]) - (piece * (fit_curve_local[pos_min]+piece));
+      double gain = (piece * ifit[i]) - (piece * (ifit[pos_min] + piece));
       if (gain <= 0) break;
       // to check if gain is NA. Alternative??
       if (gain*0 != 0) break;
       // diminish the consumption and repeat
-      // OR REDO THE CURVE?
-      cons_copy[io] = cons_copy[io] - piece;
+      cons_copy[i] -= piece;
       // populate the matrix: from
-      mtx_moves(nrow_moves,0) = i;
-      // times back
-      mtx_moves(nrow_moves,1) = loc_min - horizon;
+      mtx_moves(nrow_mtx_moves,0) = i;
+      // times back (not useful anymore?)
+      //mtx_moves(nrow_mtx_moves,1) = loc_min - horizon;
       // gain
-      mtx_moves(nrow_moves,2) = gain;
-      // additional row in the mtx_moves
-      nrow_moves = nrow_moves + 1;
+      mtx_moves(nrow_mtx_moves,2) = gain;
+      
+      // update row counter
+      nrow_mtx_moves = nrow_mtx_moves + 1;
     }
   }
   // return a matrix with the right size
-  mtx_moves = mtx_moves.head_rows(nrow_moves);
+  mtx_moves = mtx_moves.head_rows(nrow_mtx_moves);
   
   // PART 2: RETURN THE MATRIX OF PRE-BACKSHIFT
 
@@ -233,8 +237,9 @@ List backshiftCpp(arma::vec consumption,
   int index_length = mtx_moves_idx.n_elem;
   int gain_divisions = 5;
   mtx_moves.col(3) = contToFct(mtx_moves.col(2),gain_divisions);
-
-  arma::mat mtx_prebsh = arma::zeros<arma::mat>(cons_length,5);
+  
+  // potential to allocate bashshift (pre)
+  arma::mat mtx_prebsh = arma::zeros<arma::mat>(padded_length,gain_divisions);
   for (int row = 0; row < index_length; ++row) {
     int r = mtx_moves(row,0);
     int c = mtx_moves(row,3);
@@ -242,13 +247,11 @@ List backshiftCpp(arma::vec consumption,
   }
   // PART 3: DISTRIBUTE THE POINTS
  
- // reboot the consumption of env_fit
- env_fit[".demand"] = cons_master;
-  
-  // cons_mutable.insert_rows(cons_mutable.n_rows, consumption);
+  // reboot the consumption of env_fit
+  env_fit[".demand"] = cons_master;
   
   // define the post-backshift matrix, as an empty copy of the previous one
-  arma::mat mtx_postbsh = arma::zeros<arma::mat>(cons_length,5);
+  arma::mat mtx_postbsh = arma::zeros<arma::mat>(padded_length,5);
   
   for (int e = 0; e < index_length; ++e) {
     
@@ -261,15 +264,11 @@ List backshiftCpp(arma::vec consumption,
     // if (vct_cons_allowed[i] == 0) continue;
     // define `c`, the column the point belongs to
     int c = mtx_moves(mtx_moves_idx(e),3);
-    // variable `io`, that includes the 
-    int io = i + horizon;
-    
-    // env_aux = envCurrent2(env_fit, env_aux, i, horizon - 1);
-    // local fit to compare with
-    // arma::vec ifit = as<arma::vec>(Rf_eval(call_fit, env_aux));
+   
+  
     arma::vec ifit = as<arma::vec>(Rf_eval(call_fit, env_fit));
     
-    ifit = ifit.subvec(io - horizon, io - 1); 
+    ifit = ifit.subvec(i - horizon, i - 1); 
     
     arma::vec vec_local_deprec = depreciate(
       vec_local_empty.fill(ifit[horizon - 1]), //horizon
@@ -277,58 +276,37 @@ List backshiftCpp(arma::vec consumption,
       eff, 
       true
     );
-    
-    if (e == 20) {
-      Rcout << " ifit: ";
-      Rcout << ifit;
-      Rcout << " ifit[horizon]: ";
-      Rcout << ifit[horizon - 1];
-      Rcout << " vec_local_deprec: ";
-      Rcout << vec_local_deprec;
-    }
-    
-    // vec_local_cons = as<arma::vec>(Rf_eval(call_fit, env_fit));
-    // find the best point comparing the initial consumption
-    // and the depreciation curve 
-    
-    vec_local_diff = vec_local_deprec - ifit;
-    
-    
-    
-    
-    int loc_min = vec_local_diff.index_max();
-    // when no more gain in point, disallow it
-    // if (vec_local_diff[loc_min] <= 0) {
-    //   // vct_cons_allowed[i] = 0;
-    //   break;
-    // }
    
-    int pos_min = io - horizon + loc_min;
+    // find the best point to allocate
+    vec_local_diff = vec_local_deprec - ifit;
+    int loc_min = vec_local_diff.index_max();
+    int pos_min = i - horizon + loc_min;
     double gain = (piece * ifit[horizon - 1]) - (piece * (ifit[loc_min]));
-    
-    
+    // no gain, just continue
     if (gain <= 0) {
       continue;
     } 
     
     // update the clone of consumption
- 
-    cons_mutable[io] = cons_mutable[io] - piece;
-    cons_mutable[pos_min] = cons_mutable[pos_min] + piece;
+    cons_mutable[i] -= piece; 
+    cons_mutable[pos_min] += piece; 
+    // ... and the environment, for evaluation
     env_fit[".demand"] = cons_mutable;
     
     // update the postbsh matrix
-
-    mtx_postbsh(pos_min - horizon,c) = mtx_postbsh(pos_min - horizon,c) + piece;
+    mtx_postbsh(pos_min, c) += piece; 
   }
 
   arma::vec final_consumption = env_fit[".demand"];
-  final_consumption = final_consumption.tail(cons_length);
   
   arma::vec fit_curve_final = as<arma::vec>(Rf_eval(call_fit, env_fit));
   
-  fit_curve_initial = fit_curve_initial.tail(cons_length);
-  fit_curve_final = fit_curve_final.tail(cons_length);
+  // remove the NAs from the start
+  mtx_prebsh = mtx_prebsh.tail_rows(init_length);
+  mtx_postbsh = mtx_postbsh.tail_rows(init_length);
+  final_consumption = final_consumption.tail(init_length);
+  fit_curve_initial = fit_curve_initial.tail(init_length);
+  fit_curve_final = fit_curve_final.tail(init_length);
     
   return List::create(
     _["mtx_moves"]= mtx_moves,
