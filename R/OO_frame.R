@@ -141,7 +141,7 @@ e_frame <- R6Class("e_frame",
                         bshifted <- backshift(
                           input_consumption = self$demand$input$fixed,
                           horizon = horizon, 
-                          storage = self$storage$input,
+                          params_df = self$storage$params_df %||% as.data.frame(list()),
                           input_vct = total_input_vct,
                           fit = fit
                         )
@@ -149,6 +149,7 @@ e_frame <- R6Class("e_frame",
                         self$demand$output$bsh_pot <- bshifted$mtx_prebsh
                         self$demand$output$backshifted <- bshifted$mtx_postbsh
                         self$demand$output$fixed <- bshifted$final_consumption
+                        self$demand$output$v_soc <- bshifted$v_soc
                         
                         self$utility$input$fit$curve <- bshifted$fit_curve_initial
                         self$utility$output$fit$curve <- bshifted$fit_curve_final

@@ -8,8 +8,6 @@ library(eflows.viz)
 input_vct <- list()
 input_vct[[".demand"]] <- sept$d_household[1:100]*100
 
-
-
 bsh <- eflows:::backshiftCpp(consumption = sept$d_household[1:100]*100, 
                  self_discharge = 0.01, 
                  eff = list(0.9, 0.9),

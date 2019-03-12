@@ -26,9 +26,29 @@ e_storage <- R6Class("e_storage",
                         lapply(tolist, function(x){assert_that(inherits(x, "storage"))})
                         names(tolist) <- lapply(tolist, function(x){x$name})
                         self$input <- tolist
-                      }
+                      }),
+                      active = list(
+                        params_df = function(){
+                        
+                        extract_storage_params <- function(obj){
+                          data.frame(
+                            name = as.character(obj$name %||% NA),
+                            vol = as.numeric(obj$vol %||% NA),
+                            soc = as.numeric(obj$soc %||% NA),
+                            eff_to = as.numeric(obj$eff[[1]] %||% NA),
+                            eff_from = as.numeric(obj$eff[[2]] %||% NA),
+                            self_discharge = as.numeric(obj$self_discharge %||% NA),
+                            cap_to = as.numeric(obj$cap$to %||% NA),
+                            cap_from = as.numeric(obj$cap$from %||% NA),
+                            # as always, we do not want factors
+                            stringsAsFactors = FALSE
+                          )
+                        }
+                        do.call(rbind, 
+                                lapply(self$input, 
+                                       extract_storage_params))   
+                      })
                     )
-)
 
 
 #' Class to define a storage

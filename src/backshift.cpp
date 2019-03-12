@@ -131,13 +131,27 @@ Environment envCurrent2(Environment input,
 
 // [[Rcpp::export]]
 List backshiftCpp(arma::vec consumption, 
-                  float self_discharge, 
-                  List eff,
+                  DataFrame params_df,
                   int horizon,
                   Environment env_fit,
                   Language call_fit,
                   Environment env_aux,
                   Language call_aux){
+  
+  // Start with the vectors to extract data frame parameters
+  CharacterVector p_name = params_df["name"];
+  NumericVector p_vol = params_df["vol"];
+  NumericVector p_soc = params_df["soc"];
+  NumericVector p_eff_to = params_df["eff_to"];
+  NumericVector p_eff_from = params_df["eff_from"];
+  NumericVector p_self_discharge = params_df["self_discharge"];
+  NumericVector p_cap_to = params_df["cap_to"];
+  NumericVector p_cap_from = params_df["cap_from"];
+  
+  // PROVISIONALLY, assign them to the first storage
+  double self_discharge = p_self_discharge[0];
+  List eff = List::create(p_eff_to[0], p_eff_from[0]);
+  double vol = p_vol[0];
   
   // to reverse at the end the NA padding
   int init_length = consumption.n_elem;
@@ -154,6 +168,8 @@ List backshiftCpp(arma::vec consumption,
   // the length, once padded
   int padded_length = consumption.n_elem;
   
+  // initialize vectors
+  arma::vec v_soc = arma::zeros<arma::vec>(padded_length);
 
   // size of the piece
   int precision = 200;
@@ -287,9 +303,13 @@ List backshiftCpp(arma::vec consumption,
       continue;
     } 
     
-    // update the clone of consumption
+    // update the clone of consumption ...
     cons_mutable[i] -= piece; 
     cons_mutable[pos_min] += piece; 
+    // ... the v_soc vector ...
+    v_soc[i] -= piece; 
+    v_soc[pos_min] += piece;
+    
     // ... and the environment, for evaluation
     env_fit[".demand"] = cons_mutable;
     
@@ -307,16 +327,19 @@ List backshiftCpp(arma::vec consumption,
   final_consumption = final_consumption.tail(init_length);
   fit_curve_initial = fit_curve_initial.tail(init_length);
   fit_curve_final = fit_curve_final.tail(init_length);
+  
+  v_soc = v_soc.tail(init_length);
     
   return List::create(
     _["mtx_moves"]= mtx_moves,
-                      // _["mtx_moves_idx"]= mtx_moves_idx,
-                      _["mtx_prebsh"]= mtx_prebsh,
-                      _["mtx_postbsh"]= mtx_postbsh,
-                      _["final_consumption"]= final_consumption,
-                      _["fit_curve_initial"]= fit_curve_initial,
-                      _["fit_curve_final"] = fit_curve_final
-                        );
+    // _["mtx_moves_idx"]= mtx_moves_idx,
+    _["mtx_prebsh"]= mtx_prebsh,
+    _["mtx_postbsh"]= mtx_postbsh,
+    _["final_consumption"]= final_consumption,
+    _["fit_curve_initial"]= fit_curve_initial,
+    _["fit_curve_final"] = fit_curve_final,
+    _["v_soc"] = v_soc
+    );
 }
 
 
