@@ -15,7 +15,7 @@ test_object <- e_frame$new(sept$datetime[1:168])$
   set_storage(e_storage$new(input = list(
     storage$new(vol = 23, 
                 eff = list(0.95,0.95), 
-                self_discharge = 0.01,
+                self_discharge = 0,
                 name = "battery"),
     storage$new(vol = 13, 
                 eff = list(0.9,0.9), 
@@ -62,4 +62,4 @@ battery2 <- viz_storage_soc(test_object)
 
 htmltools::browsable(htmltools::tagList(list(solar, pre, post, battery, battery2)))
 
-viz_storage_soc(test_object)
+# viz_storage_soc(test_object)

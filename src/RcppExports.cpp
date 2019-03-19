@@ -7,30 +7,32 @@
 using namespace Rcpp;
 
 // appreciate
-arma::vec appreciate(arma::vec vector, float self_discharge, List eff, bool backwards);
-RcppExport SEXP _eflows_appreciate(SEXP vectorSEXP, SEXP self_dischargeSEXP, SEXP effSEXP, SEXP backwardsSEXP) {
+arma::vec appreciate(arma::vec vector, float self_discharge, float eff_to, float eff_from, bool backwards);
+RcppExport SEXP _eflows_appreciate(SEXP vectorSEXP, SEXP self_dischargeSEXP, SEXP eff_toSEXP, SEXP eff_fromSEXP, SEXP backwardsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec >::type vector(vectorSEXP);
     Rcpp::traits::input_parameter< float >::type self_discharge(self_dischargeSEXP);
-    Rcpp::traits::input_parameter< List >::type eff(effSEXP);
+    Rcpp::traits::input_parameter< float >::type eff_to(eff_toSEXP);
+    Rcpp::traits::input_parameter< float >::type eff_from(eff_fromSEXP);
     Rcpp::traits::input_parameter< bool >::type backwards(backwardsSEXP);
-    rcpp_result_gen = Rcpp::wrap(appreciate(vector, self_discharge, eff, backwards));
+    rcpp_result_gen = Rcpp::wrap(appreciate(vector, self_discharge, eff_to, eff_from, backwards));
     return rcpp_result_gen;
 END_RCPP
 }
 // depreciate
-arma::vec depreciate(arma::vec vector, float self_discharge, List eff, bool backwards);
-RcppExport SEXP _eflows_depreciate(SEXP vectorSEXP, SEXP self_dischargeSEXP, SEXP effSEXP, SEXP backwardsSEXP) {
+arma::vec depreciate(arma::vec vector, float self_discharge, float eff_to, float eff_from, bool backwards);
+RcppExport SEXP _eflows_depreciate(SEXP vectorSEXP, SEXP self_dischargeSEXP, SEXP eff_toSEXP, SEXP eff_fromSEXP, SEXP backwardsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec >::type vector(vectorSEXP);
     Rcpp::traits::input_parameter< float >::type self_discharge(self_dischargeSEXP);
-    Rcpp::traits::input_parameter< List >::type eff(effSEXP);
+    Rcpp::traits::input_parameter< float >::type eff_to(eff_toSEXP);
+    Rcpp::traits::input_parameter< float >::type eff_from(eff_fromSEXP);
     Rcpp::traits::input_parameter< bool >::type backwards(backwardsSEXP);
-    rcpp_result_gen = Rcpp::wrap(depreciate(vector, self_discharge, eff, backwards));
+    rcpp_result_gen = Rcpp::wrap(depreciate(vector, self_discharge, eff_to, eff_from, backwards));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -95,6 +97,24 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type start(startSEXP);
     Rcpp::traits::input_parameter< int >::type span(spanSEXP);
     rcpp_result_gen = Rcpp::wrap(envCurrent2(input, out, start, span));
+    return rcpp_result_gen;
+END_RCPP
+}
+// updateFlow
+arma::vec updateFlow(arma::vec v_soc, int origin, int destin, double exchange, double eff_to, double eff_from, double self_discharge, double vol);
+RcppExport SEXP _eflows_updateFlow(SEXP v_socSEXP, SEXP originSEXP, SEXP destinSEXP, SEXP exchangeSEXP, SEXP eff_toSEXP, SEXP eff_fromSEXP, SEXP self_dischargeSEXP, SEXP volSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type v_soc(v_socSEXP);
+    Rcpp::traits::input_parameter< int >::type origin(originSEXP);
+    Rcpp::traits::input_parameter< int >::type destin(destinSEXP);
+    Rcpp::traits::input_parameter< double >::type exchange(exchangeSEXP);
+    Rcpp::traits::input_parameter< double >::type eff_to(eff_toSEXP);
+    Rcpp::traits::input_parameter< double >::type eff_from(eff_fromSEXP);
+    Rcpp::traits::input_parameter< double >::type self_discharge(self_dischargeSEXP);
+    Rcpp::traits::input_parameter< double >::type vol(volSEXP);
+    rcpp_result_gen = Rcpp::wrap(updateFlow(v_soc, origin, destin, exchange, eff_to, eff_from, self_discharge, vol));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -236,13 +256,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_eflows_appreciate", (DL_FUNC) &_eflows_appreciate, 4},
-    {"_eflows_depreciate", (DL_FUNC) &_eflows_depreciate, 4},
+    {"_eflows_appreciate", (DL_FUNC) &_eflows_appreciate, 5},
+    {"_eflows_depreciate", (DL_FUNC) &_eflows_depreciate, 5},
     {"_eflows_contToFct", (DL_FUNC) &_eflows_contToFct, 2},
     {"_eflows_naPad", (DL_FUNC) &_eflows_naPad, 2},
     {"_eflows_naPadEnv", (DL_FUNC) &_eflows_naPadEnv, 3},
     {"_eflows_sliceCurrent2", (DL_FUNC) &_eflows_sliceCurrent2, 3},
     {"_eflows_envCurrent2", (DL_FUNC) &_eflows_envCurrent2, 4},
+    {"_eflows_updateFlow", (DL_FUNC) &_eflows_updateFlow, 8},
     {"_eflows_backshiftCpp", (DL_FUNC) &_eflows_backshiftCpp, 7},
     {"_eflows_distributeCpp", (DL_FUNC) &_eflows_distributeCpp, 8},
     {"_eflows_formatFlexSteps", (DL_FUNC) &_eflows_formatFlexSteps, 3},

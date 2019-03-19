@@ -5,7 +5,8 @@ using namespace Rcpp;
 
 arma::vec interest(arma::vec vector,
                        float self_discharge, 
-                       List eff, 
+                       float eff_to, 
+                       float eff_from,
                        bool backwards, 
                        bool depreciate){
   
@@ -13,9 +14,7 @@ arma::vec interest(arma::vec vector,
   
   if (backwards == true) vector = arma::reverse(vector);
 
-  float vec_local_diff = vector[0] - (vector[0] * 
-                            Rcpp::as<float>(eff[0]) * 
-                            Rcpp::as<float>(eff[1]));
+  float vec_local_diff = vector[0] - (vector[0] * eff_to * eff_from);
   
   int n = vector.n_elem;
   
@@ -35,13 +34,15 @@ arma::vec interest(arma::vec vector,
 // [[Rcpp::export]]
 arma::vec appreciate(arma::vec vector,
                      float self_discharge, 
-                     List eff, 
+                     float eff_to, 
+                     float eff_from,
                      bool backwards){
   
   bool depreciate = false;
   return interest(vector = vector,
            self_discharge = self_discharge,
-           eff = eff,
+           eff_to = eff_to,
+           eff_from = eff_from,
            backwards = backwards,
            depreciate = depreciate);
 }
@@ -49,13 +50,15 @@ arma::vec appreciate(arma::vec vector,
 // [[Rcpp::export]]
 arma::vec depreciate(arma::vec vector,
                      float self_discharge, 
-                     List eff, 
+                     float eff_to, 
+                     float eff_from, 
                      bool backwards){
   
   bool depreciate = true;
   return interest(vector = vector,
            self_discharge = self_discharge,
-           eff = eff,
+           eff_to = eff_to,
+           eff_from = eff_from,
            backwards = backwards,
            depreciate = depreciate);
 }
@@ -130,6 +133,73 @@ Environment envCurrent2(Environment input,
 }
 
 // [[Rcpp::export]]
+arma::vec updateFlow(arma::vec v_soc, 
+                    int origin, 
+                    int destin, 
+                    double exchange, 
+                    double eff_to, 
+                    double eff_from, 
+                    double self_discharge, 
+                    double vol){
+  
+  // remember: the origin is in zero
+  
+  arma::vec f_soc = v_soc;
+  arma::vec prov_soc = v_soc;
+  
+  f_soc[destin] += exchange/eff_from;
+  f_soc[origin] -= exchange/eff_from;
+  
+  int time_between = origin - destin;
+  
+  bool surpass = false;
+  
+  for (int i = 1; i < time_between; ++i) {
+    if (f_soc[destin + i] >= vol) surpass = true;
+  }
+  
+  
+  if (surpass == true) f_soc = prov_soc;
+  
+  
+  return f_soc;
+}
+
+/////
+
+// arma::vec updateSOC(arma::vec v_soc,
+//                     int origin,
+//                     int destin,
+//                     double exchange,
+//                     double eff_to,
+//                     double eff_from,
+//                     double self_discharge){
+// 
+//   // remember: the origin is in zero
+// 
+//   arma::vec f_soc = v_soc;
+// 
+//   int time_between = origin - destin;
+//   // f_soc[destin] +
+//   double exchange_destin = (((exchange / eff_from)) /
+//                             pow((1 - self_discharge), time_between)) / eff_to;
+// 
+//   f_soc[destin] = v_soc[destin] + (exchange_destin * eff_to);
+//   // f_soc[destin] = (exchange_destin * eff_to);
+// ==
+// 
+//   for (int i = 1; i < time_between; ++i) {
+//     f_soc[destin + i] = f_soc[destin + i-1] * (1 - self_discharge);
+//   }
+// 
+//   f_soc[origin] = f_soc[origin - 1] * (1 - self_discharge);
+//   f_soc[origin] = f_soc[origin] - (exchange / eff_from);
+// 
+// 
+//   return f_soc;
+// }
+
+// [[Rcpp::export]]
 List backshiftCpp(arma::vec consumption, 
                   DataFrame params_df,
                   int horizon,
@@ -150,7 +220,9 @@ List backshiftCpp(arma::vec consumption,
   
   // PROVISIONALLY, assign them to the first storage
   double self_discharge = p_self_discharge[0];
-  List eff = List::create(p_eff_to[0], p_eff_from[0]);
+  double eff_to = p_eff_to[0];
+  double eff_from = p_eff_from[0];
+  // List eff = List::create(p_eff_to[0], p_eff_from[0]);
   double vol = p_vol[0];
   
   // to reverse at the end the NA padding
@@ -207,7 +279,8 @@ List backshiftCpp(arma::vec consumption,
       arma::vec vec_local_deprec = depreciate(
         vec_local_empty.fill(ifit[i]),
         self_discharge, 
-        eff, 
+        eff_to,
+        eff_from,
         true
       );
    
@@ -289,7 +362,8 @@ List backshiftCpp(arma::vec consumption,
     arma::vec vec_local_deprec = depreciate(
       vec_local_empty.fill(ifit[horizon - 1]), //horizon
       self_discharge, 
-      eff, 
+      eff_to,
+      eff_from,
       true
     );
    
@@ -304,11 +378,19 @@ List backshiftCpp(arma::vec consumption,
     } 
     
     // update the clone of consumption ...
-    cons_mutable[i] -= piece; 
     cons_mutable[pos_min] += piece; 
+    cons_mutable[i] -= piece; 
     // ... the v_soc vector ...
-    v_soc[i] -= piece; 
-    v_soc[pos_min] += piece;
+    // v_soc[pos_min] += piece/eff_from;
+    // v_soc[i] -= piece/eff_from;
+    v_soc = updateFlow(v_soc,
+                      i,
+                      pos_min,
+                      piece,
+                      eff_to,
+                      eff_from,
+                      self_discharge, 
+                      vol);
     
     // ... and the environment, for evaluation
     env_fit[".demand"] = cons_mutable;
@@ -341,19 +423,6 @@ List backshiftCpp(arma::vec consumption,
     _["v_soc"] = v_soc
     );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
