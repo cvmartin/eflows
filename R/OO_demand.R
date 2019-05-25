@@ -56,6 +56,8 @@ flex_mtx <- R6Class("flex_mtx",
                                             name = NULL, 
                                             cap = NULL) {
                         assert_that(ncol(data) == length(steps))
+                        # assert_that(is.unsorted(steps) == FALSE)
+                        # assert_that(length(unique(steps)) == length(steps    ))
                         
                         self$name <- name
                         self$data <- data
