@@ -15,7 +15,7 @@ test_object <- e_frame$new(sept$datetime[1:168])$
   set_storage(e_storage$new(input = list(
     storage$new(vol = 23, 
                 eff = list(0.95,0.95), 
-                self_discharge = 0,
+                self_discharge = 0.01,
                 name = "battery"),
     storage$new(vol = 13, 
                 eff = list(0.9,0.9), 
@@ -55,11 +55,17 @@ solar <- data.frame(datetime = sept$datetime[1:168],
   df_to_ts() %>% 
   dygraph(height = 200)
 
-battery <- viz_storage_flows(test_object)
+battery <- data.frame(datetime = sept$datetime[1:168], vol = bshifted$v_soc) %>% 
+  df_to_ts() %>% 
+  dygraph(height = 200) %>% 
+  dyOptions(fillGraph = TRUE)
 
-battery2 <- viz_storage_soc(test_object)
+battery2 <- data.frame(datetime = sept$datetime[1:168], vol = cumsum(bshifted$v_soc)) %>% 
+  df_to_ts() %>% 
+  dygraph(height = 200) %>% 
+  dyOptions(fillGraph = TRUE)
 
 
 htmltools::browsable(htmltools::tagList(list(solar, pre, post, battery, battery2)))
 
-# viz_storage_soc(test_object)
+viz_storage_soc(test_object)
