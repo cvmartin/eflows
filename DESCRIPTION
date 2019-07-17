@@ -1,7 +1,7 @@
 Package: eflows
 Type: Package
 Title: Data-driven energy transition
-Version: 0.1.8.9000
+Version: 0.1.9.9000
 Date: 2018-16-10
 Author: person("Carlos", "Varela Martin", email = "cvarelamail@gmail.com",
     role = c("aut", "cre"))
