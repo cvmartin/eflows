@@ -14,5 +14,10 @@ steering of the energy system.
 ## Installation
 
 ``` r
-devtools::install_github("cvmartin/eflows", build_vignettes = TRUE)
+devtools::install_github("cvmartin/eflows")
 ```
+
+## Showcase
+
+A shiny app showcasing user cases of eflows is deployed
+[here](https://cvmartin.shinyapps.io/eflows/).

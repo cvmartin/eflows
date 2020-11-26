@@ -23,3 +23,8 @@ In addition, the same functions involved in the simulation can be reused to do r
 
 ```{r, eval = FALSE}
 devtools::install_github("cvmartin/eflows")
+```
+
+## Showcase
+
+A shiny app showcasing user cases of eflows is deployed [here](https://cvmartin.shinyapps.io/eflows/).
